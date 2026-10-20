@@ -1,4 +1,5 @@
 import { DomainError } from "../errors";
+import { purchaseOrderStateFor } from "../state/purchase-order-state";
 import type { DeliveryCondition, PurchaseOrderStatus } from "./statuses";
 
 export class POLine {
@@ -113,11 +114,7 @@ export class PurchaseOrder {
   }
 
   updateFulfillmentStatus(): PurchaseOrderStatus {
-    if (this.lines.length > 0 && this.lines.every((line) => line.isFullyMet())) {
-      this.status = "FULLY_DELIVERED";
-    } else if (this.lines.some((line) => line.cumulativeAcceptedQty > 0)) {
-      this.status = "PARTIALLY_DELIVERED";
-    }
+    purchaseOrderStateFor(this.status).advance(this);
     return this.status;
   }
 
@@ -129,12 +126,7 @@ export class PurchaseOrder {
     if (this.paymentLocked) {
       throw new DomainError("This purchase order is locked after payment");
     }
-    if (this.status === "FULLY_DELIVERED") {
-      throw new DomainError("Delivery cannot be recorded on a fully delivered purchase order");
-    }
-    if (this.status !== "PLACED" && this.status !== "PARTIALLY_DELIVERED") {
-      throw new DomainError("Delivery cannot be recorded on this purchase order");
-    }
+    purchaseOrderStateFor(this.status).assertCanReceive();
     if (record.lines.length === 0) {
       throw new DomainError("Record at least one received line");
     }

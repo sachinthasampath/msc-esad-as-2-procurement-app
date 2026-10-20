@@ -1,4 +1,6 @@
 import { DomainError } from "../errors";
+import type { Requisition } from "../models/requisition";
+import { moveRequisition } from "../state/requisition-state";
 
 export interface ApprovalPolicy {
   autoApproveLimit: number;
@@ -16,6 +18,7 @@ export interface ApprovalStrategy {
   readonly name: string;
   readonly outcome: ApprovalOutcome;
   applies(totalValue: number, policy: ApprovalPolicy): boolean;
+  apply(requisition: Requisition): void;
 }
 
 export class AutoApproveStrategy implements ApprovalStrategy {
@@ -24,6 +27,13 @@ export class AutoApproveStrategy implements ApprovalStrategy {
 
   applies(totalValue: number, policy: ApprovalPolicy): boolean {
     return totalValue <= policy.autoApproveLimit;
+  }
+
+  apply(requisition: Requisition): void {
+    requisition.lines.forEach((line) => {
+      line.approved = true;
+    });
+    moveRequisition(requisition, "APPROVED");
   }
 }
 
@@ -34,6 +44,10 @@ export class ManagerApprovalStrategy implements ApprovalStrategy {
   applies(totalValue: number, policy: ApprovalPolicy): boolean {
     return totalValue > policy.autoApproveLimit && totalValue <= policy.managerLimit;
   }
+
+  apply(requisition: Requisition): void {
+    moveRequisition(requisition, "WAITING_APPROVAL");
+  }
 }
 
 export class SeniorReferralStrategy implements ApprovalStrategy {
@@ -42,6 +56,10 @@ export class SeniorReferralStrategy implements ApprovalStrategy {
 
   applies(totalValue: number, policy: ApprovalPolicy): boolean {
     return totalValue > policy.managerLimit;
+  }
+
+  apply(requisition: Requisition): void {
+    moveRequisition(requisition, "REFERRED");
   }
 }
 

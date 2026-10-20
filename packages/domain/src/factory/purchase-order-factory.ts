@@ -21,13 +21,15 @@ export class PurchaseOrderFactory {
 
     const groups = new Map<string, typeof approved>();
     for (const line of approved) {
-      const existing = groups.get(line.supplierId) ?? [];
+      const key = `${line.supplierId}\0${line.depotId ?? ""}`;
+      const existing = groups.get(key) ?? [];
       existing.push(line);
-      groups.set(line.supplierId, existing);
+      groups.set(key, existing);
     }
 
-    return [...groups.entries()].map(([supplierId, lines]) => {
-      const depotId = lines.find((line) => line.depotId)?.depotId ?? null;
+    return [...groups.values()].map((lines) => {
+      const supplierId = lines[0].supplierId;
+      const depotId = lines[0].depotId;
       return new PurchaseOrder({
         poId: context.nextPoId(),
         requisitionId: requisition.requisitionId,

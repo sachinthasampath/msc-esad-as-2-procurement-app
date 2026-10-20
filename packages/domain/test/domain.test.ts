@@ -12,6 +12,7 @@ import {
   Requisition,
   RequisitionLine,
   RequisitionWorkflow,
+  domainEvents,
   selectApprovalStrategy,
 } from "../src/index";
 
@@ -110,6 +111,12 @@ describe("requisition workflow", () => {
     expect(req.lines.find((entry) => entry.lineId === "a")?.approved).toBe(true);
     expect(req.lines.find((entry) => entry.lineId === "b")?.approved).toBe(false);
   });
+
+  it("refuses to cancel a requisition that is already approved", () => {
+    const req = requisition([line("pvc", "s1", 2, 850)]);
+    RequisitionWorkflow.submit(req, policy, true);
+    expect(() => RequisitionWorkflow.cancel(req)).toThrow(/Cannot move a requisition from APPROVED/);
+  });
 });
 
 describe("purchase order factory", () => {
@@ -130,6 +137,88 @@ describe("purchase order factory", () => {
     const buildright = orders.find((order) => order.supplierId === "buildright");
     expect(buildright?.lines).toHaveLength(2);
     expect(orders.every((order) => new Set(order.lines.map(() => order.supplierId)).size === 1)).toBe(true);
+  });
+
+  it("splits one purchase order per depot when the same supplier uses two", () => {
+    const req = requisition([
+      new RequisitionLine("cement", "item-cement", "buildright", "dep-main", "Cement", 2, 200, true),
+      new RequisitionLine("steel", "item-steel", "buildright", "dep-north", "Steel", 1, 300, true),
+      new RequisitionLine("tiles", "item-tiles", "buildright", "dep-main", "Tiles", 1, 150, true),
+    ]);
+    RequisitionWorkflow.submit(req, policy, true);
+    let po = 0;
+    let lineNo = 0;
+    const orders = new PurchaseOrderFactory().split(req, {
+      nextPoId: () => `PO-${++po}`,
+      nextLineId: () => `L-${++lineNo}`,
+      deliveryAddress: "Colombo Site A",
+    });
+    expect(orders).toHaveLength(2);
+    expect(orders.every((order) => order.supplierId === "buildright")).toBe(true);
+    const main = orders.find((order) => order.depotId === "dep-main");
+    const north = orders.find((order) => order.depotId === "dep-north");
+    expect(main?.lines).toHaveLength(2);
+    expect(north?.lines).toHaveLength(1);
+  });
+});
+
+describe("domain events", () => {
+  function listen() {
+    const events: { type: string }[] = [];
+    const unsubscribe = domainEvents.subscribe({
+      update(event) {
+        events.push(event);
+      },
+    });
+    return { events, unsubscribe };
+  }
+
+  it("publishes one notice when a requisition is returned", () => {
+    const req = requisition([line("steel", "s1", 10, 3400)]);
+    RequisitionWorkflow.submit(req, policy, true);
+    const heard = listen();
+    RequisitionWorkflow.returnToOriginator(req, "OPERATIONAL", "Wrong site");
+    heard.unsubscribe();
+    expect(req.status).toBe("RETURNED");
+    expect(heard.events).toEqual([
+      expect.objectContaining({ type: "REQUISITION_RETURNED", requisitionId: req.requisitionId, comment: "Wrong site" }),
+    ]);
+  });
+
+  it("publishes a ready-for-invoice notice only when the order is fully delivered", () => {
+    const po = new PurchaseOrder({
+      poId: "PO-2026-0300",
+      requisitionId: "REQ-2026-0001",
+      supplierId: "galle",
+      depotId: null,
+      status: "PLACED",
+      deliveryAddress: "Colombo",
+      paymentLocked: false,
+      placedDate: new Date("2026-10-16"),
+      lines: [new POLine("pl-1", "hinges", "rl-1", "Door hinges", 10, 0, 100)],
+    });
+    const heard = listen();
+    po.receive(
+      new DeliveryRecord("d1", po.poId, "sm", null, new Date(), "DN-1", "", [
+        new DeliveryLine("dl", "pl-1", 4, "ACCEPTED", null, ""),
+      ]),
+    );
+    expect(heard.events).toHaveLength(0);
+    po.receive(
+      new DeliveryRecord("d2", po.poId, "sm", null, new Date(), "DN-2", "", [
+        new DeliveryLine("dl2", "pl-1", 6, "ACCEPTED", null, ""),
+      ]),
+    );
+    heard.unsubscribe();
+    expect(po.status).toBe("FULLY_DELIVERED");
+    expect(heard.events).toEqual([expect.objectContaining({ type: "PO_READY_FOR_INVOICE", poId: po.poId })]);
+    expect(() =>
+      po.receive(
+        new DeliveryRecord("d3", po.poId, "sm", null, new Date(), "DN-3", "", [
+          new DeliveryLine("dl3", "pl-1", 1, "ACCEPTED", null, ""),
+        ]),
+      ),
+    ).toThrow(/fully delivered/);
   });
 });
 
@@ -181,6 +270,11 @@ describe("delivery and three-way match", () => {
       ]),
     );
     expect(po.status).toBe("FULLY_DELIVERED");
+  });
+
+  it("reports that nothing has been delivered before any other mismatch", () => {
+    const invoice = new Invoice("INV-0", "PO-2026-0234", "galle", "SUP-0", new Date(), 1000, 10, "Hinges", "", "PENDING", null);
+    expect(invoice.performThreeWayMatch(placedOrder()).outcome).toBe("NOT_DELIVERED");
   });
 
   it("matches, holds a price mismatch, and refuses payment until approved", () => {

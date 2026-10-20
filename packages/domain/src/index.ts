@@ -31,4 +31,6 @@ export type {
 } from "./models/statuses";
 export { ManagementStaff, ProcurementStaff, SiteManager, User, assertRole } from "./models/user";
 export type { ManagementLevel, Role } from "./models/user";
+export { domainEvents } from "./observer/domain-events";
+export type { DomainEvent, DomainObserver } from "./observer/domain-events";
 export { moveRequisition, RequisitionWorkflow } from "./state/requisition-workflow";

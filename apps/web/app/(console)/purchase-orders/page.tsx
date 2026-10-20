@@ -20,6 +20,7 @@ type Order = {
   id: string;
   requisitionId: string;
   supplierName: string;
+  depotName: string | null;
   siteName: string;
   amount: number;
   orderedQty: number;
@@ -137,6 +138,7 @@ export default function PurchaseOrdersPage() {
           <div className="grid gap-3 sm:grid-cols-2">
             <Tile label="Requisition" value={selected.requisitionId} />
             <Tile label="Supplier" value={selected.supplierName} />
+            <Tile label="Depot" value={selected.depotName ?? "Any depot"} />
             <Tile label="Site" value={selected.siteName} />
             <Tile label="Amount" value={<Money value={selected.amount} />} />
             <Tile label="Order date" value={formatDate(selected.placedDate)} />

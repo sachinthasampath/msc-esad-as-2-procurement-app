@@ -105,7 +105,7 @@ export function DeliveryBoard() {
       <div className="mt-3 space-y-3">
         {visible.map((row) => (
           <button key={row.id} className="w-full rounded-2xl bg-white p-4 text-left shadow-sm" onClick={() => row.status === "FULLY_DELIVERED" ? undefined : open(row)}>
-            <div className="flex justify-between gap-2">
+            <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="font-semibold">{row.supplierName}</p>
                 <p className="text-sm text-[var(--px-muted)]">{row.siteName}</p>

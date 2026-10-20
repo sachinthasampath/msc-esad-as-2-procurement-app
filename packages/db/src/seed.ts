@@ -77,12 +77,20 @@ async function main() {
     data: suppliers.map(([id, name, address, taxId]) => ({ id, name, address, taxId })),
   });
   await prisma.depot.createMany({
-    data: suppliers.map(([id, name]) => ({
-      id: `dep-${id}`,
-      supplierId: id,
-      location: `${name} main depot`,
-      contactDetails: "Stores desk",
-    })),
+    data: [
+      ...suppliers.map(([id, name]) => ({
+        id: `dep-${id}`,
+        supplierId: id,
+        location: `${name} main depot`,
+        contactDetails: "Stores desk",
+      })),
+      {
+        id: "dep-sup-buildright-kelaniya",
+        supplierId: "sup-buildright",
+        location: "BuildRight Hardware Kelaniya depot",
+        contactDetails: "North stores",
+      },
+    ],
   });
 
   await prisma.catalogItem.createMany({

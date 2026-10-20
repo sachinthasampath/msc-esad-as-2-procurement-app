@@ -4,7 +4,7 @@ import { Button, Money, ProgressBar, SearchField, Select, StatusBadge, TextArea,
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { api } from "../lib/api";
 
-type Line = { id: string; itemId: string; supplierId: string; description: string; quantity: number; negotiatedPrice: number; isPriceValid: boolean; supplierName?: string };
+type Line = { id: string; itemId: string; supplierId: string; depotId?: string | null; description: string; quantity: number; negotiatedPrice: number; isPriceValid: boolean; supplierName?: string };
 type Po = { id: string; supplierName: string; status: string; orderedQty: number; acceptedQty: number };
 export type Requisition = {
   id: string;
@@ -174,10 +174,11 @@ function RequisitionSheet({ existing, onClose, onSaved }: { existing: Requisitio
   const [query, setQuery] = useState("");
   const [requiredDate, setRequiredDate] = useState(existing?.requiredDate.slice(0, 10) ?? "2026-10-30");
   const [comments, setComments] = useState(existing?.comments ?? "");
-  const [lines, setLines] = useState<{ itemId: string; supplierId: string; description: string; quantity: number; priced: boolean; price: number }[]>(
+  const [lines, setLines] = useState<{ itemId: string; supplierId: string; depotId: string | null; description: string; quantity: number; priced: boolean; price: number }[]>(
     existing?.lines.map((line) => ({
       itemId: line.itemId,
       supplierId: line.supplierId,
+      depotId: line.depotId ?? null,
       description: line.description,
       quantity: line.quantity,
       priced: line.isPriceValid,
@@ -204,7 +205,7 @@ function RequisitionSheet({ existing, onClose, onSaved }: { existing: Requisitio
     setLines((current) => {
       const found = current.find((line) => line.itemId === item.id);
       if (found) return current.map((line) => line.itemId === item.id ? { ...line, quantity: line.quantity + 1 } : line);
-      return [...current, { itemId: item.id, supplierId: item.supplierId, description: item.description, quantity: 1, priced: item.priced, price: item.agreedPrice ?? 0 }];
+      return [...current, { itemId: item.id, supplierId: item.supplierId, depotId: depotId || null, description: item.description, quantity: 1, priced: item.priced, price: item.agreedPrice ?? 0 }];
     });
   }
 
@@ -220,7 +221,7 @@ function RequisitionSheet({ existing, onClose, onSaved }: { existing: Requisitio
       accountId,
       requiredDate,
       comments,
-      lines: lines.map((line) => ({ itemId: line.itemId, quantity: line.quantity, depotId: line.supplierId === supplierId ? depotId || null : null })),
+      lines: lines.map((line) => ({ itemId: line.itemId, quantity: line.quantity, depotId: line.depotId })),
     };
     try {
       const saved = existing
@@ -242,10 +243,10 @@ function RequisitionSheet({ existing, onClose, onSaved }: { existing: Requisitio
         <Select label="Funding account" value={accountId} onChange={(event) => setAccountId(event.target.value)}>
           {accounts.map((account) => <option key={account.id} value={account.id}>{account.accountName}</option>)}
         </Select>
-        <Select label="Supplier" value={supplierId} onChange={(event) => setSupplierId(event.target.value)}>
+        <Select label="Supplier" value={supplierId} onChange={(event) => { setSupplierId(event.target.value); setDepotId(""); }}>
           {suppliers.map((supplier) => <option key={supplier.id} value={supplier.id}>{supplier.name}</option>)}
         </Select>
-        <Select label="Depot (optional)" value={depotId} onChange={(event) => setDepotId(event.target.value)}>
+        <Select label="Depot for the next item (optional)" value={depotId} onChange={(event) => setDepotId(event.target.value)}>
           <option value="">Any depot</option>
           {depots.map((depot) => <option key={depot.id} value={depot.id}>{depot.location}</option>)}
         </Select>
@@ -261,14 +262,17 @@ function RequisitionSheet({ existing, onClose, onSaved }: { existing: Requisitio
             </li>
           ))}
         </ul>
-        <p className="text-xs text-[var(--px-muted)]">Change supplier and add more lines. Approval creates one purchase order per supplier.</p>
+        <p className="text-xs text-[var(--px-muted)]">Change supplier and add more lines. Each line keeps the depot selected when it was added. Approval creates one purchase order per supplier and depot.</p>
         <ul className="space-y-2">
-          {lines.map((line) => (
-            <li key={line.itemId} className="flex items-center justify-between text-sm">
-              <span>{line.description}{line.priced ? "" : " · Unpriced"}</span>
-              <input className="w-16 rounded-lg border px-2 py-1" type="number" min={1} value={line.quantity} onChange={(event) => setLines((current) => current.map((entry) => entry.itemId === line.itemId ? { ...entry, quantity: Number(event.target.value) } : entry))} />
-            </li>
-          ))}
+          {lines.map((line) => {
+            const depotName = suppliers.flatMap((supplier) => supplier.depots).find((depot) => depot.id === line.depotId)?.location;
+            return (
+              <li key={line.itemId} className="flex items-center justify-between gap-2 text-sm">
+                <span>{line.description}{line.priced ? "" : " · Unpriced"}{depotName ? ` · ${depotName}` : ""}</span>
+                <input className="w-16 rounded-lg border px-2 py-1" type="number" min={1} value={line.quantity} onChange={(event) => setLines((current) => current.map((entry) => entry.itemId === line.itemId ? { ...entry, quantity: Number(event.target.value) } : entry))} />
+              </li>
+            );
+          })}
         </ul>
         <TextArea label="Comment for the approver" value={comments} onChange={(event) => setComments(event.target.value)} />
         {error ? <p className="text-sm text-[var(--px-danger)]">{error}</p> : null}

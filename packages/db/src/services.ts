@@ -21,7 +21,9 @@ import {
   assertRole,
   assertValidPolicy,
   derivePoListBadge,
+  domainEvents,
   type ApprovalPolicy,
+  type DomainEvent,
   type DeliveryCondition,
   type InvoiceStatus,
   type ManagementLevel,
@@ -58,6 +60,47 @@ type UserRow = Prisma.UserGetPayload<{ include: { site: true } }>;
 
 function nid(prefix: string): string {
   return `${prefix}-${randomBytes(4).toString("hex")}`;
+}
+
+function notificationFrom(event: DomainEvent) {
+  if (event.type === "REQUISITION_RETURNED") {
+    const comment = event.comment.trim();
+    return {
+      id: nid("nt"),
+      userId: event.originatorId,
+      role: null,
+      kind: event.type,
+      message: comment
+        ? `Requisition ${event.requisitionId} was returned: ${comment}`
+        : `Requisition ${event.requisitionId} was returned`,
+      entityId: event.requisitionId,
+    };
+  }
+  return {
+    id: nid("nt"),
+    userId: null,
+    role: "PROCUREMENT_STAFF",
+    kind: event.type,
+    message: `Purchase order ${event.poId} is ready for invoice`,
+    entityId: event.poId,
+  };
+}
+
+async function captureDomainEvents(tx: Prisma.TransactionClient, run: () => Promise<void> | void): Promise<void> {
+  const events: DomainEvent[] = [];
+  const unsubscribe = domainEvents.subscribe({
+    update(event) {
+      events.push(event);
+    },
+  });
+  try {
+    await run();
+    for (const event of events) {
+      await tx.notification.create({ data: notificationFrom(event) });
+    }
+  } finally {
+    unsubscribe();
+  }
 }
 
 export function toDomainUser(row: { id: string; name: string; email: string; contactNumber: string; role: string; level: string | null; siteId: string | null }): User {
@@ -263,7 +306,19 @@ function latestInvoice(row: PurchaseOrderRow) {
   return [...row.invoices].sort((a, b) => b.invoiceDate.getTime() - a.invoiceDate.getTime())[0] ?? null;
 }
 
-export function presentPurchaseOrder(row: PurchaseOrderRow) {
+async function depotLocations(ids: Array<string | null | undefined>): Promise<Map<string, string>> {
+  const unique = [...new Set(ids.filter((id): id is string => Boolean(id)))];
+  if (unique.length === 0) return new Map();
+  const depots = await prisma.depot.findMany({ where: { id: { in: unique } }, select: { id: true, location: true } });
+  return new Map(depots.map((depot) => [depot.id, depot.location]));
+}
+
+function depotLabel(locations: Map<string, string>, depotId: string | null): string | null {
+  if (!depotId) return null;
+  return locations.get(depotId) ?? null;
+}
+
+export function presentPurchaseOrder(row: PurchaseOrderRow, depotName: string | null = null) {
   const po = hydratePurchaseOrder(row);
   const invoiceRow = latestInvoice(row);
   const invoice = invoiceRow ? hydrateInvoice(invoiceRow) : null;
@@ -273,6 +328,8 @@ export function presentPurchaseOrder(row: PurchaseOrderRow) {
     requisitionId: row.requisitionId,
     supplierId: row.supplierId,
     supplierName: row.supplier.name,
+    depotId: row.depotId,
+    depotName,
     siteId: row.requisition.siteId,
     siteName: row.requisition.site.siteName,
     createdByName: row.requisition.createdBy.name,
@@ -431,11 +488,19 @@ async function buildLines(lines: LineInput[]) {
     where: { id: { in: lines.map((line) => line.itemId) } },
     include: { supplier: true },
   });
+  const depotIds = [...new Set(lines.map((line) => line.depotId).filter((id): id is string => Boolean(id)))];
+  const depots = depotIds.length === 0 ? [] : await prisma.depot.findMany({ where: { id: { in: depotIds } } });
   return lines.map((input) => {
     const item = items.find((entry) => entry.id === input.itemId);
     if (!item) throw new DomainError("An item is no longer in the catalogue");
     if (!Number.isInteger(input.quantity) || input.quantity <= 0) {
       throw new DomainError("Quantity must be a whole number greater than zero");
+    }
+    if (input.depotId) {
+      const depot = depots.find((entry) => entry.id === input.depotId);
+      if (!depot || depot.supplierId !== item.supplierId) {
+        throw new DomainError("Choose a depot that belongs to this supplier");
+      }
     }
     const priced = item.agreedPrice != null && item.agreedPrice > 0;
     return {
@@ -597,18 +662,20 @@ export async function decideRequisition(
   if (!(manager instanceof ManagementStaff)) throw new ForbiddenError("Only management can decide a requisition");
   const currentPolicy = await policyOf();
   await prisma.$transaction(async (tx) => {
-    const row = await tx.requisition.findUnique({ where: { id }, include: requisitionInclude });
-    if (!row) throw new DomainError("Requisition not found");
-    const requisition = hydrateRequisition(row);
-    const comment = input.comment?.trim() ?? "";
-    if (input.action === "approve") RequisitionWorkflow.approve(requisition, manager.level, currentPolicy);
-    if (input.action === "partial") RequisitionWorkflow.partialApprove(requisition, manager.level, input.lineIds ?? [], currentPolicy);
-    if (input.action === "decline") RequisitionWorkflow.decline(requisition, manager.level, comment);
-    if (input.action === "return") RequisitionWorkflow.returnToOriginator(requisition, manager.level, comment);
-    if (input.action === "refer") RequisitionWorkflow.refer(requisition, manager.level, comment);
-    if (comment && (input.action === "approve" || input.action === "partial")) requisition.reviewComment = comment;
-    await saveRequisition(tx, requisition);
-    await createOrdersFor(tx, row, requisition);
+    await captureDomainEvents(tx, async () => {
+      const row = await tx.requisition.findUnique({ where: { id }, include: requisitionInclude });
+      if (!row) throw new DomainError("Requisition not found");
+      const requisition = hydrateRequisition(row);
+      const comment = input.comment?.trim() ?? "";
+      if (input.action === "approve") RequisitionWorkflow.approve(requisition, manager.level, currentPolicy);
+      if (input.action === "partial") RequisitionWorkflow.partialApprove(requisition, manager.level, input.lineIds ?? [], currentPolicy);
+      if (input.action === "decline") RequisitionWorkflow.decline(requisition, manager.level, comment);
+      if (input.action === "return") RequisitionWorkflow.returnToOriginator(requisition, manager.level, comment);
+      if (input.action === "refer") RequisitionWorkflow.refer(requisition, manager.level, comment);
+      if (comment && (input.action === "approve" || input.action === "partial")) requisition.reviewComment = comment;
+      await saveRequisition(tx, requisition);
+      await createOrdersFor(tx, row, requisition);
+    });
   });
   return getRequisition(token, id);
 }
@@ -620,7 +687,8 @@ export async function listPurchaseOrders(token: string | null) {
     include: poInclude,
     orderBy: { placedDate: "desc" },
   });
-  return rows.map(presentPurchaseOrder);
+  const locations = await depotLocations(rows.map((row) => row.depotId));
+  return rows.map((row) => presentPurchaseOrder(row, depotLabel(locations, row.depotId)));
 }
 
 export async function getPurchaseOrder(token: string | null, id: string) {
@@ -628,7 +696,8 @@ export async function getPurchaseOrder(token: string | null, id: string) {
   const row = await prisma.purchaseOrder.findUnique({ where: { id }, include: poInclude });
   if (!row) throw new DomainError("Purchase order not found");
   assertOwn(user, row.requisition.createdById);
-  return presentPurchaseOrder(row);
+  const locations = await depotLocations([row.depotId]);
+  return presentPurchaseOrder(row, depotLabel(locations, row.depotId));
 }
 
 export interface DeliveryInput {
@@ -641,6 +710,7 @@ export async function logDelivery(token: string | null, poId: string, input: Del
   const actor = await requireUser(token);
   assertRole(toDomainUser(actor), "SITE_MANAGER");
   await prisma.$transaction(async (tx) => {
+    await captureDomainEvents(tx, async () => {
     const row = await tx.purchaseOrder.findUnique({ where: { id: poId }, include: poInclude });
     if (!row) throw new DomainError("Purchase order not found");
     assertOwn(actor, row.requisition.createdById);
@@ -706,6 +776,7 @@ export async function logDelivery(token: string | null, poId: string, input: Del
         listBadge: derivePoListBadge(po, (invoice?.status as InvoiceStatus | undefined) ?? null),
       },
     });
+    });
   });
   return getPurchaseOrder(token, poId);
 }
@@ -737,7 +808,10 @@ export async function listDeliveries(token: string | null) {
   }));
 }
 
-function presentInvoice(row: Prisma.InvoiceGetPayload<{ include: { supplier: true; po: { include: typeof poInclude } } }>) {
+function presentInvoice(
+  row: Prisma.InvoiceGetPayload<{ include: { supplier: true; po: { include: typeof poInclude } } }>,
+  depotName: string | null = null,
+) {
   const po = hydratePurchaseOrder(row.po);
   const invoice = hydrateInvoice(row);
   const match = invoice.performThreeWayMatch(po);
@@ -764,7 +838,7 @@ function presentInvoice(row: Prisma.InvoiceGetPayload<{ include: { supplier: tru
     notes: row.notes,
     matchLabel,
     match,
-    order: presentPurchaseOrder(row.po),
+    order: presentPurchaseOrder(row.po, depotName),
   };
 }
 
@@ -774,7 +848,8 @@ export async function listInvoices(token: string | null) {
   const user = await requireUser(token);
   if (user.role === "SITE_MANAGER") throw new ForbiddenError("Invoices are handled in the office");
   const rows = await prisma.invoice.findMany({ include: invoiceInclude, orderBy: { invoiceDate: "desc" } });
-  return rows.map(presentInvoice);
+  const locations = await depotLocations(rows.map((row) => row.po.depotId));
+  return rows.map((row) => presentInvoice(row, depotLabel(locations, row.po.depotId)));
 }
 
 export async function createInvoice(
@@ -828,7 +903,8 @@ export async function createInvoice(
     data: { listBadge: derivePoListBadge(domainPo, "PENDING") },
   });
   const created = await prisma.invoice.findUniqueOrThrow({ where: { id }, include: invoiceInclude });
-  return presentInvoice(created);
+  const locations = await depotLocations([created.po.depotId]);
+  return presentInvoice(created, depotLabel(locations, created.po.depotId));
 }
 
 async function withInvoice(id: string, change: (invoice: Invoice, po: PurchaseOrder, row: PurchaseOrderRow) => Promise<void> | void) {
@@ -908,7 +984,8 @@ export async function invoiceAction(
     });
   }
   const row = await prisma.invoice.findUniqueOrThrow({ where: { id }, include: invoiceInclude });
-  return presentInvoice(row);
+  const locations = await depotLocations([row.po.depotId]);
+  return presentInvoice(row, depotLabel(locations, row.po.depotId));
 }
 
 export async function listPayments(token: string | null) {
@@ -940,6 +1017,22 @@ export async function listPayments(token: string | null) {
       status: payment.status,
     })),
   };
+}
+
+export async function listNotifications(token: string | null) {
+  const user = await requireUser(token);
+  const rows = await prisma.notification.findMany({
+    where: user.role === "SITE_MANAGER" ? { userId: user.id } : { role: "PROCUREMENT_STAFF" },
+    orderBy: { createdAt: "desc" },
+    take: 20,
+  });
+  return rows.map((row) => ({
+    id: row.id,
+    kind: row.kind,
+    message: row.message,
+    entityId: row.entityId,
+    createdAt: row.createdAt.toISOString(),
+  }));
 }
 
 export async function dashboard(token: string | null) {
