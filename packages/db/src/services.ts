@@ -306,7 +306,19 @@ function latestInvoice(row: PurchaseOrderRow) {
   return [...row.invoices].sort((a, b) => b.invoiceDate.getTime() - a.invoiceDate.getTime())[0] ?? null;
 }
 
-export function presentPurchaseOrder(row: PurchaseOrderRow) {
+async function depotLocations(ids: Array<string | null | undefined>): Promise<Map<string, string>> {
+  const unique = [...new Set(ids.filter((id): id is string => Boolean(id)))];
+  if (unique.length === 0) return new Map();
+  const depots = await prisma.depot.findMany({ where: { id: { in: unique } }, select: { id: true, location: true } });
+  return new Map(depots.map((depot) => [depot.id, depot.location]));
+}
+
+function depotLabel(locations: Map<string, string>, depotId: string | null): string | null {
+  if (!depotId) return null;
+  return locations.get(depotId) ?? null;
+}
+
+export function presentPurchaseOrder(row: PurchaseOrderRow, depotName: string | null = null) {
   const po = hydratePurchaseOrder(row);
   const invoiceRow = latestInvoice(row);
   const invoice = invoiceRow ? hydrateInvoice(invoiceRow) : null;
@@ -316,6 +328,8 @@ export function presentPurchaseOrder(row: PurchaseOrderRow) {
     requisitionId: row.requisitionId,
     supplierId: row.supplierId,
     supplierName: row.supplier.name,
+    depotId: row.depotId,
+    depotName,
     siteId: row.requisition.siteId,
     siteName: row.requisition.site.siteName,
     createdByName: row.requisition.createdBy.name,
@@ -474,11 +488,19 @@ async function buildLines(lines: LineInput[]) {
     where: { id: { in: lines.map((line) => line.itemId) } },
     include: { supplier: true },
   });
+  const depotIds = [...new Set(lines.map((line) => line.depotId).filter((id): id is string => Boolean(id)))];
+  const depots = depotIds.length === 0 ? [] : await prisma.depot.findMany({ where: { id: { in: depotIds } } });
   return lines.map((input) => {
     const item = items.find((entry) => entry.id === input.itemId);
     if (!item) throw new DomainError("An item is no longer in the catalogue");
     if (!Number.isInteger(input.quantity) || input.quantity <= 0) {
       throw new DomainError("Quantity must be a whole number greater than zero");
+    }
+    if (input.depotId) {
+      const depot = depots.find((entry) => entry.id === input.depotId);
+      if (!depot || depot.supplierId !== item.supplierId) {
+        throw new DomainError("Choose a depot that belongs to this supplier");
+      }
     }
     const priced = item.agreedPrice != null && item.agreedPrice > 0;
     return {
@@ -665,7 +687,8 @@ export async function listPurchaseOrders(token: string | null) {
     include: poInclude,
     orderBy: { placedDate: "desc" },
   });
-  return rows.map(presentPurchaseOrder);
+  const locations = await depotLocations(rows.map((row) => row.depotId));
+  return rows.map((row) => presentPurchaseOrder(row, depotLabel(locations, row.depotId)));
 }
 
 export async function getPurchaseOrder(token: string | null, id: string) {
@@ -673,7 +696,8 @@ export async function getPurchaseOrder(token: string | null, id: string) {
   const row = await prisma.purchaseOrder.findUnique({ where: { id }, include: poInclude });
   if (!row) throw new DomainError("Purchase order not found");
   assertOwn(user, row.requisition.createdById);
-  return presentPurchaseOrder(row);
+  const locations = await depotLocations([row.depotId]);
+  return presentPurchaseOrder(row, depotLabel(locations, row.depotId));
 }
 
 export interface DeliveryInput {
@@ -784,7 +808,10 @@ export async function listDeliveries(token: string | null) {
   }));
 }
 
-function presentInvoice(row: Prisma.InvoiceGetPayload<{ include: { supplier: true; po: { include: typeof poInclude } } }>) {
+function presentInvoice(
+  row: Prisma.InvoiceGetPayload<{ include: { supplier: true; po: { include: typeof poInclude } } }>,
+  depotName: string | null = null,
+) {
   const po = hydratePurchaseOrder(row.po);
   const invoice = hydrateInvoice(row);
   const match = invoice.performThreeWayMatch(po);
@@ -811,7 +838,7 @@ function presentInvoice(row: Prisma.InvoiceGetPayload<{ include: { supplier: tru
     notes: row.notes,
     matchLabel,
     match,
-    order: presentPurchaseOrder(row.po),
+    order: presentPurchaseOrder(row.po, depotName),
   };
 }
 
@@ -821,7 +848,8 @@ export async function listInvoices(token: string | null) {
   const user = await requireUser(token);
   if (user.role === "SITE_MANAGER") throw new ForbiddenError("Invoices are handled in the office");
   const rows = await prisma.invoice.findMany({ include: invoiceInclude, orderBy: { invoiceDate: "desc" } });
-  return rows.map(presentInvoice);
+  const locations = await depotLocations(rows.map((row) => row.po.depotId));
+  return rows.map((row) => presentInvoice(row, depotLabel(locations, row.po.depotId)));
 }
 
 export async function createInvoice(
@@ -875,7 +903,8 @@ export async function createInvoice(
     data: { listBadge: derivePoListBadge(domainPo, "PENDING") },
   });
   const created = await prisma.invoice.findUniqueOrThrow({ where: { id }, include: invoiceInclude });
-  return presentInvoice(created);
+  const locations = await depotLocations([created.po.depotId]);
+  return presentInvoice(created, depotLabel(locations, created.po.depotId));
 }
 
 async function withInvoice(id: string, change: (invoice: Invoice, po: PurchaseOrder, row: PurchaseOrderRow) => Promise<void> | void) {
@@ -955,7 +984,8 @@ export async function invoiceAction(
     });
   }
   const row = await prisma.invoice.findUniqueOrThrow({ where: { id }, include: invoiceInclude });
-  return presentInvoice(row);
+  const locations = await depotLocations([row.po.depotId]);
+  return presentInvoice(row, depotLabel(locations, row.po.depotId));
 }
 
 export async function listPayments(token: string | null) {

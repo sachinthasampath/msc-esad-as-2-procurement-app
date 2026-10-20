@@ -138,6 +138,28 @@ describe("purchase order factory", () => {
     expect(buildright?.lines).toHaveLength(2);
     expect(orders.every((order) => new Set(order.lines.map(() => order.supplierId)).size === 1)).toBe(true);
   });
+
+  it("splits one purchase order per depot when the same supplier uses two", () => {
+    const req = requisition([
+      new RequisitionLine("cement", "item-cement", "buildright", "dep-main", "Cement", 2, 200, true),
+      new RequisitionLine("steel", "item-steel", "buildright", "dep-north", "Steel", 1, 300, true),
+      new RequisitionLine("tiles", "item-tiles", "buildright", "dep-main", "Tiles", 1, 150, true),
+    ]);
+    RequisitionWorkflow.submit(req, policy, true);
+    let po = 0;
+    let lineNo = 0;
+    const orders = new PurchaseOrderFactory().split(req, {
+      nextPoId: () => `PO-${++po}`,
+      nextLineId: () => `L-${++lineNo}`,
+      deliveryAddress: "Colombo Site A",
+    });
+    expect(orders).toHaveLength(2);
+    expect(orders.every((order) => order.supplierId === "buildright")).toBe(true);
+    const main = orders.find((order) => order.depotId === "dep-main");
+    const north = orders.find((order) => order.depotId === "dep-north");
+    expect(main?.lines).toHaveLength(2);
+    expect(north?.lines).toHaveLength(1);
+  });
 });
 
 describe("domain events", () => {

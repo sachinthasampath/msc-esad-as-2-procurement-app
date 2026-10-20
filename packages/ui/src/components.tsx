@@ -87,7 +87,7 @@ export function StatusBadge({ status }: { status: string }) {
     info: "bg-[var(--px-info-bg)] text-[var(--px-info)]",
     neutral: "bg-slate-100 text-slate-600",
   };
-  return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${colors[tone]}`}>{statusLabel(status)}</span>;
+  return <span className={`inline-flex shrink-0 self-start whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ${colors[tone]}`}>{statusLabel(status)}</span>;
 }
 
 export function Money({ value }: { value: number }) {
