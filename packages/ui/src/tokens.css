@@ -1,0 +1,30 @@
+:root {
+  --px-navy: #0e1726;
+  --px-navy-2: #162033;
+  --px-blue: #2563eb;
+  --px-canvas: #f3f6fb;
+  --px-surface: #ffffff;
+  --px-line: #e6ebf2;
+  --px-muted: #64748b;
+  --px-success: #15803d;
+  --px-success-bg: #e8f8ee;
+  --px-warning: #b45309;
+  --px-warning-bg: #fff6e8;
+  --px-danger: #dc2626;
+  --px-danger-bg: #fdecec;
+  --px-info: #1d4ed8;
+  --px-info-bg: #e8f0fe;
+  --px-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+  --px-font: "Segoe UI", Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--px-font);
+  color: var(--px-navy);
+  background: var(--px-canvas);
+}
+
+button, input, select, textarea { font: inherit; }

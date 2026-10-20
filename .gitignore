@@ -1,0 +1,11 @@
+node_modules
+.next
+dist
+.turbo
+*.tsbuildinfo
+packages/db/prisma/dev.db
+packages/db/prisma/dev.db-journal
+.env
+apps/web/.env
+apps/pwa/.env.local
+packages/db/.env

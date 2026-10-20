@@ -1,0 +1,19 @@
+{
+  "name": "procurex",
+  "private": true,
+  "packageManager": "npm@10.9.8",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "test": "npm run test -w @procurex/domain",
+    "db:setup": "npm run setup -w @procurex/db",
+    "db:seed": "npm run seed -w @procurex/db"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.6"
+  }
+}

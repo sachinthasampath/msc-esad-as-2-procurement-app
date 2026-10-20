@@ -1,0 +1,220 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String             @id
+  name          String
+  email         String             @unique
+  contactNumber String
+  passwordHash  String
+  role          String
+  level         String?
+  siteId        String?
+  site          ConstructionSite?  @relation(fields: [siteId], references: [id])
+  requisitions  Requisition[]      @relation("CreatedBy")
+  sessions      Session[]
+  deliveries    DeliveryRecord[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Sequence {
+  id    String @id
+  value Int
+}
+
+model ApprovalPolicy {
+  id               String @id
+  autoApproveLimit Float
+  managerLimit     Float
+}
+
+model Account {
+  id             String        @id
+  accountName    String
+  costCenter     String
+  currentBalance Float
+  requisitions   Requisition[]
+}
+
+model ConstructionSite {
+  id            String        @id
+  siteName      String
+  address       String
+  contactPerson String
+  managers      User[]
+  requisitions  Requisition[]
+}
+
+model Supplier {
+  id       String          @id
+  name     String
+  address  String
+  taxId    String
+  depots   Depot[]
+  items    CatalogItem[]
+  orders   PurchaseOrder[]
+  invoices Invoice[]
+}
+
+model Depot {
+  id             String   @id
+  supplierId     String
+  location       String
+  contactDetails String
+  supplier       Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+}
+
+model CatalogItem {
+  id              String   @id
+  supplierId      String
+  description     String
+  unitOfMeasure   String
+  agreedPrice     Float?
+  isRestricted    Boolean  @default(false)
+  lastUpdatedById String?
+  supplier        Supplier @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+}
+
+model Requisition {
+  id              String            @id
+  siteId          String
+  accountId       String
+  createdById     String
+  status          String
+  totalValue      Float
+  requiredDate    DateTime
+  submittedDate   DateTime?
+  comments        String            @default("")
+  reviewComment   String            @default("")
+  allocatedBudget Float
+  site            ConstructionSite  @relation(fields: [siteId], references: [id])
+  account         Account           @relation(fields: [accountId], references: [id])
+  createdBy       User              @relation("CreatedBy", fields: [createdById], references: [id])
+  lines           RequisitionLine[]
+  purchaseOrders  PurchaseOrder[]
+}
+
+model RequisitionLine {
+  id              String      @id
+  requisitionId   String
+  itemId          String
+  supplierId      String
+  depotId         String?
+  description     String
+  quantity        Int
+  negotiatedPrice Float
+  isPriceValid    Boolean
+  approved        Boolean     @default(false)
+  requisition     Requisition @relation(fields: [requisitionId], references: [id], onDelete: Cascade)
+}
+
+model PurchaseOrder {
+  id              String           @id
+  requisitionId   String
+  supplierId      String
+  depotId         String?
+  status          String
+  listBadge       String
+  deliveryAddress String
+  paymentLocked   Boolean          @default(false)
+  placedDate      DateTime
+  requisition     Requisition      @relation(fields: [requisitionId], references: [id])
+  supplier        Supplier         @relation(fields: [supplierId], references: [id])
+  lines           POLine[]
+  deliveries      DeliveryRecord[]
+  invoices        Invoice[]
+  payments        Payment[]
+}
+
+model POLine {
+  id                    String         @id
+  poId                  String
+  itemId                String
+  requisitionLineId     String
+  description           String
+  quantityOrdered       Int
+  cumulativeAcceptedQty Int            @default(0)
+  unitPrice             Float
+  po                    PurchaseOrder  @relation(fields: [poId], references: [id], onDelete: Cascade)
+  deliveryLines         DeliveryLine[]
+}
+
+model DeliveryRecord {
+  id                      String         @id
+  poId                    String
+  siteManagerId           String
+  depotId                 String?
+  timestamp               DateTime
+  supplierDeliveryNoteRef String         @default("")
+  note                    String         @default("")
+  po                      PurchaseOrder  @relation(fields: [poId], references: [id], onDelete: Cascade)
+  siteManager             User           @relation(fields: [siteManagerId], references: [id])
+  lines                   DeliveryLine[]
+}
+
+model DeliveryLine {
+  id               String         @id
+  deliveryRecordId String
+  poLineId         String
+  quantityReceived Int
+  condition        String
+  photoUrl         String?
+  remark           String         @default("")
+  record           DeliveryRecord @relation(fields: [deliveryRecordId], references: [id], onDelete: Cascade)
+  poLine           POLine         @relation(fields: [poLineId], references: [id], onDelete: Cascade)
+}
+
+model Invoice {
+  id              String       @id
+  poId            String
+  supplierId      String
+  invoiceNumber   String
+  invoiceDate     DateTime
+  totalAmount     Float
+  payableAmount   Float
+  invoiceQuantity Int
+  itemDescription String       @default("")
+  notes           String       @default("")
+  status          String
+  processedById   String?
+  po              PurchaseOrder @relation(fields: [poId], references: [id])
+  supplier        Supplier     @relation(fields: [supplierId], references: [id])
+  creditNotes     CreditNote[]
+  payment         Payment?
+}
+
+model CreditNote {
+  id               String  @id
+  invoiceId        String
+  adjustmentAmount Float
+  reason           String
+  invoice          Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id               String        @id
+  invoiceId        String        @unique
+  poId             String
+  paidAmount       Float
+  paymentDate      DateTime
+  paymentMethod    String
+  paymentReference String
+  processedById    String
+  status           String
+  remarks          String        @default("")
+  invoice          Invoice       @relation(fields: [invoiceId], references: [id])
+  po               PurchaseOrder @relation(fields: [poId], references: [id])
+}
