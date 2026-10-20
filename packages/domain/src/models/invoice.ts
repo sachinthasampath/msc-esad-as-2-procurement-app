@@ -1,4 +1,5 @@
 import { DomainError } from "../errors";
+import { runThreeWayMatch } from "../matching/three-way-match";
 import type { PurchaseOrder } from "./purchase-order";
 import type { InvoiceStatus, PaymentStatus } from "./statuses";
 
@@ -54,27 +55,7 @@ export class Invoice {
       invoiceAmount,
     };
 
-    if (acceptedQty <= 0) {
-      return { ...base, outcome: "NOT_DELIVERED", message: "No accepted delivery has been recorded for this purchase order" };
-    }
-    const matchesAccepted = Math.abs(invoiceAmount - acceptedAmount) < 0.5;
-    const matchesOrder = Math.abs(invoiceAmount - orderedAmount) < 0.5;
-    if (acceptedQty >= orderedQty && matchesOrder) {
-      return { ...base, outcome: "FULL_MATCH", message: "Purchase order, goods receipt, and invoice match" };
-    }
-    if (acceptedQty < orderedQty && (matchesAccepted || matchesOrder)) {
-      return {
-        ...base,
-        outcome: "PARTIAL_DELIVERY",
-        message: `Partial delivery detected. ${acceptedQty} of ${orderedQty} units have been accepted`,
-      };
-    }
-    const difference = roundMoney(invoiceAmount - acceptedAmount);
-    return {
-      ...base,
-      outcome: "PRICE_MISMATCH",
-      message: `Price mismatch of Rs. ${Math.abs(difference).toLocaleString("en-IN")} against the accepted goods`,
-    };
+    return runThreeWayMatch(base);
   }
 
   approve(po: PurchaseOrder, mode: "FULL" | "PARTIAL"): MatchResult {

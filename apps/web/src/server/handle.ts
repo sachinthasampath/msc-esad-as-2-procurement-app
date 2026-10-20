@@ -83,6 +83,7 @@ export async function handle(request: Request, parts: string[]) {
     }
     if (resource === "payments" && request.method === "GET") return json(await api.listPayments(token));
     if (resource === "dashboard" && request.method === "GET") return json(await api.dashboard(token));
+    if (resource === "notifications" && request.method === "GET") return json(await api.listNotifications(token));
     if (resource === "reports" && request.method === "GET") return json(await api.reports(token));
     if (resource === "settings" && request.method === "GET") return json(await api.getSettings(token));
     if (resource === "settings" && request.method === "PUT") return json(await api.updateSettings(token, await body() as never));

@@ -5,12 +5,16 @@ import { useEffect, useState } from "react";
 import { Note, PageHeader, StatCard } from "../../../components/kit";
 import { api } from "../../../lib/api";
 
+type Notice = { id: string; message: string; createdAt: string };
+
 export default function DashboardPage() {
   const [data, setData] = useState<{ waitingRequisitions: number; openPurchaseOrders: number; invoicesOnHold: number; paidThisMonth: number } | null>(null);
+  const [notices, setNotices] = useState<Notice[]>([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
     api.get<NonNullable<typeof data>>("/api/v1/dashboard").then(setData).catch((caught) => setError(caught.message));
+    api.get<Notice[]>("/api/v1/notifications").then(setNotices).catch((caught) => setError(caught.message));
   }, []);
 
   return (
@@ -24,7 +28,18 @@ export default function DashboardPage() {
         <StatCard label="Paid this month" value={data ? formatMoney(data.paidThisMonth) : "—"} />
       </div>
       <div className="mt-6">
-        <Note>Approval bands are in Settings. A requisition at or under the auto-approve limit becomes purchase orders without a manager.</Note>
+        <h2 className="mb-2 text-sm font-semibold">Notices</h2>
+        {notices.length === 0 ? (
+          <Note>No purchase orders are waiting for an invoice.</Note>
+        ) : (
+          <ul className="space-y-2">
+            {notices.map((notice) => (
+              <li key={notice.id}>
+                <Note>{notice.message}</Note>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </>
   );

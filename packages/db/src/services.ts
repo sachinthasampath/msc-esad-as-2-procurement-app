@@ -21,7 +21,9 @@ import {
   assertRole,
   assertValidPolicy,
   derivePoListBadge,
+  domainEvents,
   type ApprovalPolicy,
+  type DomainEvent,
   type DeliveryCondition,
   type InvoiceStatus,
   type ManagementLevel,
@@ -58,6 +60,47 @@ type UserRow = Prisma.UserGetPayload<{ include: { site: true } }>;
 
 function nid(prefix: string): string {
   return `${prefix}-${randomBytes(4).toString("hex")}`;
+}
+
+function notificationFrom(event: DomainEvent) {
+  if (event.type === "REQUISITION_RETURNED") {
+    const comment = event.comment.trim();
+    return {
+      id: nid("nt"),
+      userId: event.originatorId,
+      role: null,
+      kind: event.type,
+      message: comment
+        ? `Requisition ${event.requisitionId} was returned: ${comment}`
+        : `Requisition ${event.requisitionId} was returned`,
+      entityId: event.requisitionId,
+    };
+  }
+  return {
+    id: nid("nt"),
+    userId: null,
+    role: "PROCUREMENT_STAFF",
+    kind: event.type,
+    message: `Purchase order ${event.poId} is ready for invoice`,
+    entityId: event.poId,
+  };
+}
+
+async function captureDomainEvents(tx: Prisma.TransactionClient, run: () => Promise<void> | void): Promise<void> {
+  const events: DomainEvent[] = [];
+  const unsubscribe = domainEvents.subscribe({
+    update(event) {
+      events.push(event);
+    },
+  });
+  try {
+    await run();
+    for (const event of events) {
+      await tx.notification.create({ data: notificationFrom(event) });
+    }
+  } finally {
+    unsubscribe();
+  }
 }
 
 export function toDomainUser(row: { id: string; name: string; email: string; contactNumber: string; role: string; level: string | null; siteId: string | null }): User {
@@ -597,18 +640,20 @@ export async function decideRequisition(
   if (!(manager instanceof ManagementStaff)) throw new ForbiddenError("Only management can decide a requisition");
   const currentPolicy = await policyOf();
   await prisma.$transaction(async (tx) => {
-    const row = await tx.requisition.findUnique({ where: { id }, include: requisitionInclude });
-    if (!row) throw new DomainError("Requisition not found");
-    const requisition = hydrateRequisition(row);
-    const comment = input.comment?.trim() ?? "";
-    if (input.action === "approve") RequisitionWorkflow.approve(requisition, manager.level, currentPolicy);
-    if (input.action === "partial") RequisitionWorkflow.partialApprove(requisition, manager.level, input.lineIds ?? [], currentPolicy);
-    if (input.action === "decline") RequisitionWorkflow.decline(requisition, manager.level, comment);
-    if (input.action === "return") RequisitionWorkflow.returnToOriginator(requisition, manager.level, comment);
-    if (input.action === "refer") RequisitionWorkflow.refer(requisition, manager.level, comment);
-    if (comment && (input.action === "approve" || input.action === "partial")) requisition.reviewComment = comment;
-    await saveRequisition(tx, requisition);
-    await createOrdersFor(tx, row, requisition);
+    await captureDomainEvents(tx, async () => {
+      const row = await tx.requisition.findUnique({ where: { id }, include: requisitionInclude });
+      if (!row) throw new DomainError("Requisition not found");
+      const requisition = hydrateRequisition(row);
+      const comment = input.comment?.trim() ?? "";
+      if (input.action === "approve") RequisitionWorkflow.approve(requisition, manager.level, currentPolicy);
+      if (input.action === "partial") RequisitionWorkflow.partialApprove(requisition, manager.level, input.lineIds ?? [], currentPolicy);
+      if (input.action === "decline") RequisitionWorkflow.decline(requisition, manager.level, comment);
+      if (input.action === "return") RequisitionWorkflow.returnToOriginator(requisition, manager.level, comment);
+      if (input.action === "refer") RequisitionWorkflow.refer(requisition, manager.level, comment);
+      if (comment && (input.action === "approve" || input.action === "partial")) requisition.reviewComment = comment;
+      await saveRequisition(tx, requisition);
+      await createOrdersFor(tx, row, requisition);
+    });
   });
   return getRequisition(token, id);
 }
@@ -641,6 +686,7 @@ export async function logDelivery(token: string | null, poId: string, input: Del
   const actor = await requireUser(token);
   assertRole(toDomainUser(actor), "SITE_MANAGER");
   await prisma.$transaction(async (tx) => {
+    await captureDomainEvents(tx, async () => {
     const row = await tx.purchaseOrder.findUnique({ where: { id: poId }, include: poInclude });
     if (!row) throw new DomainError("Purchase order not found");
     assertOwn(actor, row.requisition.createdById);
@@ -705,6 +751,7 @@ export async function logDelivery(token: string | null, poId: string, input: Del
         status: po.status,
         listBadge: derivePoListBadge(po, (invoice?.status as InvoiceStatus | undefined) ?? null),
       },
+    });
     });
   });
   return getPurchaseOrder(token, poId);
@@ -940,6 +987,22 @@ export async function listPayments(token: string | null) {
       status: payment.status,
     })),
   };
+}
+
+export async function listNotifications(token: string | null) {
+  const user = await requireUser(token);
+  const rows = await prisma.notification.findMany({
+    where: user.role === "SITE_MANAGER" ? { userId: user.id } : { role: "PROCUREMENT_STAFF" },
+    orderBy: { createdAt: "desc" },
+    take: 20,
+  });
+  return rows.map((row) => ({
+    id: row.id,
+    kind: row.kind,
+    message: row.message,
+    entityId: row.entityId,
+    createdAt: row.createdAt.toISOString(),
+  }));
 }
 
 export async function dashboard(token: string | null) {
