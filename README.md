@@ -12,6 +12,7 @@ SiteFlow procurement simulator for the SE5060 case study. The site-manager phone
 | [Planning](docs/planning.md) | Why the five design patterns sit where they do |
 | [Design patterns](docs/design-patterns.md) | The classes that implement them |
 | [Evidence](docs/evidence.md) | File names and line numbers for the walkthrough |
+| [Walkthrough notes](docs/walkthrough/01-accuracy.md) | What to say for each marking-rubric section |
 
 Wireframes and the original screen notes are in [`design/`](design/).
 
