@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "title": "Strategy pattern for approval bands",
+  "type": "academic-diagram",
+  "source": "generated",
+  "profile": "academic-paper",
+  "theme": "academic",
+  "layout": "vertical",
+  "counts": {
+    "nodes": 6,
+    "edges": 5,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "route",
+      "label": "routePriced\nunpriced -> ON_HOLD",
+      "type": "process"
+    },
+    {
+      "id": "policy",
+      "label": "ApprovalPolicy\nauto 10,000 / manager 100,000",
+      "type": "document"
+    },
+    {
+      "id": "pick",
+      "label": "selectApprovalStrategy",
+      "type": "decision"
+    },
+    {
+      "id": "auto",
+      "label": "AutoApproveStrategy\ntotal at or under auto limit\nAPPROVED",
+      "type": "process"
+    },
+    {
+      "id": "mgr",
+      "label": "ManagerApprovalStrategy\nmiddle band\nWAITING_APPROVAL",
+      "type": "process"
+    },
+    {
+      "id": "sen",
+      "label": "SeniorReferralStrategy\nabove manager limit\nREFERRED",
+      "type": "process"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "policy",
+      "to": "pick",
+      "type": "data",
+      "label": "limits"
+    },
+    {
+      "id": "edge-2",
+      "from": "route",
+      "to": "pick",
+      "type": "primary",
+      "label": "priced total"
+    },
+    {
+      "id": "edge-3",
+      "from": "pick",
+      "to": "auto",
+      "type": "primary",
+      "label": "Rs. 8,000"
+    },
+    {
+      "id": "edge-4",
+      "from": "pick",
+      "to": "mgr",
+      "type": "optional",
+      "label": "Rs. 40,000"
+    },
+    {
+      "id": "edge-5",
+      "from": "pick",
+      "to": "sen",
+      "type": "optional",
+      "label": "Rs. 150,000"
+    }
+  ],
+  "modules": []
+}

@@ -1,0 +1,135 @@
+meta:
+  layout: vertical
+  profile: academic-paper
+  theme: academic
+nodes:
+  - id: Start
+    label: Start
+    type: terminal
+  - id: Draft
+    label: Draft
+    type: service
+  - id: OnHold
+    label: OnHold
+    type: service
+  - id: WaitingApproval
+    label: WaitingApproval
+    type: service
+  - id: Referred
+    label: Referred
+    type: service
+  - id: Approved
+    label: Approved
+    type: decision
+  - id: Cancelled
+    label: Cancelled
+    type: service
+  - id: PartiallyApproved
+    label: PartiallyApproved
+    type: decision
+  - id: Declined
+    label: Declined
+    type: service
+  - id: Returned
+    label: Returned
+    type: service
+  - id: End
+    label: End
+    type: terminal
+edges:
+  - from: Start
+    to: Draft
+    type: primary
+  - from: Draft
+    to: OnHold
+    type: primary
+    label: unpriced submit
+  - from: Draft
+    to: WaitingApproval
+    type: primary
+    label: manager band
+  - from: Draft
+    to: Referred
+    type: primary
+    label: above manager limit
+  - from: Draft
+    to: Approved
+    type: primary
+    label: auto-approve
+  - from: Draft
+    to: Cancelled
+    type: primary
+    label: cancel
+  - from: OnHold
+    to: WaitingApproval
+    type: primary
+    label: priced, manager band
+  - from: OnHold
+    to: Referred
+    type: primary
+    label: priced, above limit
+  - from: OnHold
+    to: Approved
+    type: primary
+    label: priced, auto-approve
+  - from: OnHold
+    to: Cancelled
+    type: primary
+    label: cancel
+  - from: WaitingApproval
+    to: Approved
+    type: primary
+    label: approve
+  - from: WaitingApproval
+    to: PartiallyApproved
+    type: primary
+    label: partial
+  - from: WaitingApproval
+    to: Declined
+    type: primary
+    label: decline
+  - from: WaitingApproval
+    to: Returned
+    type: primary
+    label: return
+  - from: WaitingApproval
+    to: Referred
+    type: primary
+    label: refer
+  - from: WaitingApproval
+    to: Cancelled
+    type: primary
+    label: cancel
+  - from: Referred
+    to: Approved
+    type: primary
+    label: senior approve
+  - from: Referred
+    to: PartiallyApproved
+    type: primary
+    label: senior partial
+  - from: Referred
+    to: Declined
+    type: primary
+    label: senior decline
+  - from: Referred
+    to: Returned
+    type: primary
+    label: senior return
+  - from: Returned
+    to: Draft
+    type: primary
+    label: originator edits
+  - from: Approved
+    to: End
+    type: primary
+  - from: PartiallyApproved
+    to: End
+    type: primary
+  - from: Declined
+    to: End
+    type: primary
+  - from: Cancelled
+    to: End
+    type: primary
+modules: []

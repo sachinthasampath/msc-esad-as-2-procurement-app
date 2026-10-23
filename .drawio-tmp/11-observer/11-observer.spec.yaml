@@ -1,0 +1,46 @@
+meta:
+  profile: academic-paper
+  figureType: architecture
+  theme: academic
+  palette: ieee-bw
+  layout: horizontal
+  source: generated
+  title: Observer notices on the next load
+  description: A status change publishes a domain event. The database layer writes a Notification row in the same transaction.
+  legend: Nothing is emailed. The other role sees the notice on the next load.
+  print:
+    target: cn-thesis
+nodes:
+  - id: ret
+    label: Return to originator
+    type: process
+  - id: full
+    label: PO fully delivered
+    type: process
+  - id: bus
+    label: domainEvents.publish
+    type: queue
+  - id: home
+    label: |-
+      SiteFlow Home
+      REQUISITION_RETURNED
+    type: user
+  - id: dash
+    label: |-
+      ProcureX dashboard
+      PO_READY_FOR_INVOICE
+    type: service
+edges:
+  - from: ret
+    to: bus
+    type: primary
+  - from: full
+    to: bus
+    type: primary
+  - from: bus
+    to: home
+    type: data
+  - from: bus
+    to: dash
+    type: data
+modules: []

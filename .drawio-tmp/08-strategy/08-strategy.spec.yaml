@@ -1,0 +1,66 @@
+meta:
+  profile: academic-paper
+  figureType: workflow
+  theme: academic
+  palette: ieee-bw
+  layout: vertical
+  source: generated
+  title: Strategy pattern for approval bands
+  description: routePriced selects one strategy from ApprovalPolicy and that object applies the status.
+  legend: Solid arrows are the selected path. The three strategies are alternatives.
+  print:
+    target: cn-thesis
+nodes:
+  - id: route
+    label: |-
+      routePriced
+      unpriced -> ON_HOLD
+    type: process
+  - id: policy
+    label: |-
+      ApprovalPolicy
+      auto 10,000 / manager 100,000
+    type: document
+  - id: pick
+    label: selectApprovalStrategy
+    type: decision
+  - id: auto
+    label: |-
+      AutoApproveStrategy
+      total at or under auto limit
+      APPROVED
+    type: process
+  - id: mgr
+    label: |-
+      ManagerApprovalStrategy
+      middle band
+      WAITING_APPROVAL
+    type: process
+  - id: sen
+    label: |-
+      SeniorReferralStrategy
+      above manager limit
+      REFERRED
+    type: process
+edges:
+  - from: policy
+    to: pick
+    type: data
+    label: limits
+  - from: route
+    to: pick
+    type: primary
+    label: priced total
+  - from: pick
+    to: auto
+    type: primary
+    label: Rs. 8,000
+  - from: pick
+    to: mgr
+    type: optional
+    label: Rs. 40,000
+  - from: pick
+    to: sen
+    type: optional
+    label: Rs. 150,000
+modules: []

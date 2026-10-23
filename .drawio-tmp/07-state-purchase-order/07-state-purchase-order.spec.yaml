@@ -1,0 +1,45 @@
+meta:
+  layout: vertical
+  profile: academic-paper
+  theme: academic
+nodes:
+  - id: Start
+    label: Start
+    type: terminal
+  - id: Placed
+    label: Placed
+    type: service
+  - id: PartiallyDelivered
+    label: PartiallyDelivered
+    type: service
+  - id: FullyDelivered
+    label: FullyDelivered
+    type: service
+  - id: End
+    label: End
+    type: terminal
+edges:
+  - from: Start
+    to: Placed
+    type: primary
+    label: factory after approval
+  - from: Placed
+    to: PartiallyDelivered
+    type: primary
+    label: short receipt
+  - from: Placed
+    to: FullyDelivered
+    type: primary
+    label: receipt covers every line
+  - from: PartiallyDelivered
+    to: PartiallyDelivered
+    type: primary
+    label: another short receipt
+  - from: PartiallyDelivered
+    to: FullyDelivered
+    type: primary
+    label: remaining quantity accepted
+  - from: FullyDelivered
+    to: End
+    type: primary
+modules: []

@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "title": "Observer notices on the next load",
+  "type": "academic-diagram",
+  "source": "generated",
+  "profile": "academic-paper",
+  "theme": "academic",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 5,
+    "edges": 4,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "ret",
+      "label": "Return to originator",
+      "type": "process"
+    },
+    {
+      "id": "full",
+      "label": "PO fully delivered",
+      "type": "process"
+    },
+    {
+      "id": "bus",
+      "label": "domainEvents.publish",
+      "type": "queue"
+    },
+    {
+      "id": "home",
+      "label": "SiteFlow Home\nREQUISITION_RETURNED",
+      "type": "user"
+    },
+    {
+      "id": "dash",
+      "label": "ProcureX dashboard\nPO_READY_FOR_INVOICE",
+      "type": "service"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "ret",
+      "to": "bus",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "full",
+      "to": "bus",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "bus",
+      "to": "home",
+      "type": "data"
+    },
+    {
+      "id": "edge-4",
+      "from": "bus",
+      "to": "dash",
+      "type": "data"
+    }
+  ],
+  "modules": []
+}

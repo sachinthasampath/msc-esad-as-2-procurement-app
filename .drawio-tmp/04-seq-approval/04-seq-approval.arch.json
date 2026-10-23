@@ -1,0 +1,273 @@
+{
+  "version": 1,
+  "title": "Approval and purchase-order split",
+  "type": "academic-diagram",
+  "source": "replicated",
+  "profile": "academic-paper",
+  "theme": "academic",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 28,
+    "edges": 14,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "a",
+      "label": "Manager",
+      "type": "process"
+    },
+    {
+      "id": "a_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b",
+      "label": "ProcureX",
+      "type": "process"
+    },
+    {
+      "id": "b_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c",
+      "label": "API / services",
+      "type": "process"
+    },
+    {
+      "id": "c_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d",
+      "label": "Workflow",
+      "type": "process"
+    },
+    {
+      "id": "d_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "e",
+      "label": "Factory",
+      "type": "process"
+    },
+    {
+      "id": "e_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "a_y0_a",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y0_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y1_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y1_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "a_y2_a",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y2_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y3_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y3_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y4_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_y4_d",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_y5_d",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "e_y5_e",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "e_y6_e",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y6_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_y7_d",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y7_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y8_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y8_b",
+      "label": ".",
+      "type": "text"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "a",
+      "to": "a_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "b",
+      "to": "b_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "c",
+      "to": "c_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "d",
+      "to": "d_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-5",
+      "from": "e",
+      "to": "e_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-6",
+      "from": "a_y0_a",
+      "to": "b_y0_b",
+      "type": "primary",
+      "label": "1. Open Requisitions queue"
+    },
+    {
+      "id": "edge-7",
+      "from": "b_y1_b",
+      "to": "c_y1_c",
+      "type": "primary",
+      "label": "2. GET /requisitions?status=WAITING_APPROVAL"
+    },
+    {
+      "id": "edge-8",
+      "from": "a_y2_a",
+      "to": "b_y2_b",
+      "type": "primary",
+      "label": "3. Approve / partial / decline / return / refer"
+    },
+    {
+      "id": "edge-9",
+      "from": "b_y3_b",
+      "to": "c_y3_c",
+      "type": "primary",
+      "label": "4. POST /requisitions/{id}/decide"
+    },
+    {
+      "id": "edge-10",
+      "from": "c_y4_c",
+      "to": "d_y4_d",
+      "type": "primary",
+      "label": "5. RequisitionWorkflow (budget check)"
+    },
+    {
+      "id": "edge-11",
+      "from": "d_y5_d",
+      "to": "e_y5_e",
+      "type": "primary",
+      "label": "6. if approved: PurchaseOrderFactory.split"
+    },
+    {
+      "id": "edge-12",
+      "from": "e_y6_e",
+      "to": "c_y6_c",
+      "type": "primary",
+      "label": "7. one PO per supplier, status PLACED"
+    },
+    {
+      "id": "edge-13",
+      "from": "d_y7_d",
+      "to": "c_y7_c",
+      "type": "primary",
+      "label": "8. Observer: return notice if returned"
+    },
+    {
+      "id": "edge-14",
+      "from": "c_y8_c",
+      "to": "b_y8_b",
+      "type": "primary",
+      "label": "9. new status and PO numbers"
+    }
+  ],
+  "modules": [],
+  "replication": {
+    "colorMode": "theme-first",
+    "background": "#FFFFFF",
+    "palette": [
+      {
+        "hex": "#FFFFFF",
+        "role": "canvas and node fill",
+        "appliesTo": "nodes",
+        "confidence": "high"
+      },
+      {
+        "hex": "#1E1E1E",
+        "role": "strokes, text, and arrows",
+        "appliesTo": "mixed",
+        "confidence": "high"
+      }
+    ],
+    "confidenceNotes": [
+      "Source sketches are black on white. Notation was normalized to UML academic conventions: dashed lifelines, filled synchronous arrows, open return arrows, hollow generalization triangles, and compartmented classes."
+    ]
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "title": "07-state-purchase-order",
+  "type": "academic-diagram",
+  "source": "generated",
+  "profile": "academic-paper",
+  "theme": "academic",
+  "layout": "vertical",
+  "counts": {
+    "nodes": 5,
+    "edges": 6,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "Start",
+      "label": "Start",
+      "type": "terminal"
+    },
+    {
+      "id": "Placed",
+      "label": "Placed",
+      "type": "service"
+    },
+    {
+      "id": "PartiallyDelivered",
+      "label": "PartiallyDelivered",
+      "type": "service"
+    },
+    {
+      "id": "FullyDelivered",
+      "label": "FullyDelivered",
+      "type": "service"
+    },
+    {
+      "id": "End",
+      "label": "End",
+      "type": "terminal"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "Start",
+      "to": "Placed",
+      "type": "primary",
+      "label": "factory after approval"
+    },
+    {
+      "id": "edge-2",
+      "from": "Placed",
+      "to": "PartiallyDelivered",
+      "type": "primary",
+      "label": "short receipt"
+    },
+    {
+      "id": "edge-3",
+      "from": "Placed",
+      "to": "FullyDelivered",
+      "type": "primary",
+      "label": "receipt covers every line"
+    },
+    {
+      "id": "edge-4",
+      "from": "PartiallyDelivered",
+      "to": "PartiallyDelivered",
+      "type": "primary",
+      "label": "another short receipt"
+    },
+    {
+      "id": "edge-5",
+      "from": "PartiallyDelivered",
+      "to": "FullyDelivered",
+      "type": "primary",
+      "label": "remaining quantity accepted"
+    },
+    {
+      "id": "edge-6",
+      "from": "FullyDelivered",
+      "to": "End",
+      "type": "primary"
+    }
+  ],
+  "modules": []
+}

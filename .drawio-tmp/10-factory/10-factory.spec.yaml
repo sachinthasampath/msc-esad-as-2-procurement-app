@@ -1,0 +1,46 @@
+meta:
+  profile: academic-paper
+  figureType: workflow
+  theme: academic
+  palette: ieee-bw
+  layout: horizontal
+  source: generated
+  title: Factory split after approval
+  description: PurchaseOrderFactory groups approved lines by supplier and depot. The database service only allocates PO numbers.
+  legend: One requisition can produce more than one purchase order. A PO never mixes suppliers.
+  print:
+    target: cn-thesis
+nodes:
+  - id: req
+    label: |-
+      Approved requisition
+      BuildRight + Ceylon Timber
+    type: document
+  - id: fac
+    label: |-
+      PurchaseOrderFactory.split
+      group by supplierId + depotId
+    type: process
+  - id: po1
+    label: |-
+      PO-2026-0001
+      BuildRight
+      PLACED
+    type: output
+  - id: po2
+    label: |-
+      PO-2026-0002
+      Ceylon Timber
+      PLACED
+    type: output
+edges:
+  - from: req
+    to: fac
+    type: primary
+  - from: fac
+    to: po1
+    type: primary
+  - from: fac
+    to: po2
+    type: primary
+modules: []

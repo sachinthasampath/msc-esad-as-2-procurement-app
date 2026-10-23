@@ -1,0 +1,290 @@
+{
+  "version": 1,
+  "title": "Create and submit a requisition",
+  "type": "academic-diagram",
+  "source": "replicated",
+  "profile": "academic-paper",
+  "theme": "academic",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 30,
+    "edges": 15,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "a",
+      "label": "Site manager",
+      "type": "process"
+    },
+    {
+      "id": "a_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b",
+      "label": "SiteFlow",
+      "type": "process"
+    },
+    {
+      "id": "b_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c",
+      "label": "API / services",
+      "type": "process"
+    },
+    {
+      "id": "c_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d",
+      "label": "Workflow",
+      "type": "process"
+    },
+    {
+      "id": "d_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "e",
+      "label": "Strategy",
+      "type": "process"
+    },
+    {
+      "id": "e_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "a_y0_a",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y0_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y1_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y1_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "a_y2_a",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y2_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y3_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y3_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y4_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_y4_d",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_y5_d",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "e_y5_e",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "e_y6_e",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_y6_d",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y7_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y7_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y8_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "a_y8_a",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_yself_top_d",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_self_bot",
+      "label": ".",
+      "type": "text"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "a",
+      "to": "a_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "b",
+      "to": "b_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "c",
+      "to": "c_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "d",
+      "to": "d_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-5",
+      "from": "e",
+      "to": "e_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-6",
+      "from": "a_y0_a",
+      "to": "b_y0_b",
+      "type": "primary",
+      "label": "1. Open New Purchase Order sheet"
+    },
+    {
+      "id": "edge-7",
+      "from": "b_y1_b",
+      "to": "c_y1_c",
+      "type": "primary",
+      "label": "2. POST /requisitions (draft)"
+    },
+    {
+      "id": "edge-8",
+      "from": "a_y2_a",
+      "to": "b_y2_b",
+      "type": "primary",
+      "label": "3. Submit (online only)"
+    },
+    {
+      "id": "edge-9",
+      "from": "b_y3_b",
+      "to": "c_y3_c",
+      "type": "primary",
+      "label": "4. POST /requisitions/{id}/submit"
+    },
+    {
+      "id": "edge-10",
+      "from": "c_y4_c",
+      "to": "d_y4_d",
+      "type": "primary",
+      "label": "5. RequisitionWorkflow.submit"
+    },
+    {
+      "id": "edge-11",
+      "from": "d_y5_d",
+      "to": "e_y5_e",
+      "type": "primary",
+      "label": "7. selectApprovalStrategy(total, policy) apply"
+    },
+    {
+      "id": "edge-12",
+      "from": "e_y6_e",
+      "to": "d_y6_d",
+      "type": "primary",
+      "label": "8. APPROVED / WAITING_APPROVAL / REFERRED"
+    },
+    {
+      "id": "edge-13",
+      "from": "c_y7_c",
+      "to": "b_y7_b",
+      "type": "primary",
+      "label": "9. saved status returned"
+    },
+    {
+      "id": "edge-14",
+      "from": "b_y8_b",
+      "to": "a_y8_a",
+      "type": "primary",
+      "label": "10. Orders list shows new status"
+    },
+    {
+      "id": "edge-15",
+      "from": "d_yself_top_d",
+      "to": "d_self_bot",
+      "type": "primary",
+      "label": "6. unpriced? -> ON_HOLD"
+    }
+  ],
+  "modules": [],
+  "replication": {
+    "colorMode": "theme-first",
+    "background": "#FFFFFF",
+    "palette": [
+      {
+        "hex": "#FFFFFF",
+        "role": "canvas and node fill",
+        "appliesTo": "nodes",
+        "confidence": "high"
+      },
+      {
+        "hex": "#1E1E1E",
+        "role": "strokes, text, and arrows",
+        "appliesTo": "mixed",
+        "confidence": "high"
+      }
+    ],
+    "confidenceNotes": [
+      "Source sketches are black on white. Notation was normalized to UML academic conventions: dashed lifelines, filled synchronous arrows, open return arrows, hollow generalization triangles, and compartmented classes."
+    ]
+  }
+}

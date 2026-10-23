@@ -1,0 +1,188 @@
+{
+  "version": 1,
+  "title": "Requisition and purchase-order states",
+  "type": "academic-diagram",
+  "source": "replicated",
+  "profile": "academic-paper",
+  "theme": "academic",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 12,
+    "edges": 13,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "draft",
+      "label": "Draft",
+      "type": "process"
+    },
+    {
+      "id": "hold",
+      "label": "On hold",
+      "type": "process"
+    },
+    {
+      "id": "waiting",
+      "label": "Waiting approval",
+      "type": "process"
+    },
+    {
+      "id": "referred",
+      "label": "Referred",
+      "type": "process"
+    },
+    {
+      "id": "approved",
+      "label": "Approved",
+      "type": "process"
+    },
+    {
+      "id": "partial",
+      "label": "Partially approved",
+      "type": "process"
+    },
+    {
+      "id": "declined",
+      "label": "Declined",
+      "type": "process"
+    },
+    {
+      "id": "returned",
+      "label": "Returned",
+      "type": "process"
+    },
+    {
+      "id": "cancelled",
+      "label": "Cancelled",
+      "type": "process"
+    },
+    {
+      "id": "placed",
+      "label": "Placed",
+      "type": "process"
+    },
+    {
+      "id": "partDel",
+      "label": "Partially delivered",
+      "type": "process"
+    },
+    {
+      "id": "fullDel",
+      "label": "Fully delivered",
+      "type": "process"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "draft",
+      "to": "hold",
+      "type": "primary",
+      "label": "unpriced submit"
+    },
+    {
+      "id": "edge-2",
+      "from": "hold",
+      "to": "waiting",
+      "type": "primary",
+      "label": "manager band"
+    },
+    {
+      "id": "edge-3",
+      "from": "waiting",
+      "to": "referred",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "draft",
+      "to": "approved",
+      "type": "primary",
+      "label": "auto-approve"
+    },
+    {
+      "id": "edge-5",
+      "from": "hold",
+      "to": "partial",
+      "type": "primary"
+    },
+    {
+      "id": "edge-6",
+      "from": "waiting",
+      "to": "declined",
+      "type": "primary",
+      "label": "decline"
+    },
+    {
+      "id": "edge-7",
+      "from": "referred",
+      "to": "returned",
+      "type": "primary",
+      "label": "above limit"
+    },
+    {
+      "id": "edge-8",
+      "from": "returned",
+      "to": "cancelled",
+      "type": "primary"
+    },
+    {
+      "id": "edge-9",
+      "from": "waiting",
+      "to": "returned",
+      "type": "primary",
+      "label": "return"
+    },
+    {
+      "id": "edge-10",
+      "from": "waiting",
+      "to": "draft",
+      "type": "primary",
+      "label": "edit -> Draft"
+    },
+    {
+      "id": "edge-11",
+      "from": "waiting",
+      "to": "partial",
+      "type": "primary",
+      "label": "approve"
+    },
+    {
+      "id": "edge-12",
+      "from": "placed",
+      "to": "partDel",
+      "type": "primary",
+      "label": "short receipt"
+    },
+    {
+      "id": "edge-13",
+      "from": "partDel",
+      "to": "fullDel",
+      "type": "primary",
+      "label": "covers order"
+    }
+  ],
+  "modules": [],
+  "replication": {
+    "colorMode": "theme-first",
+    "background": "#FFFFFF",
+    "palette": [
+      {
+        "hex": "#FFFFFF",
+        "role": "canvas and node fill",
+        "appliesTo": "nodes",
+        "confidence": "high"
+      },
+      {
+        "hex": "#1E1E1E",
+        "role": "strokes, text, and arrows",
+        "appliesTo": "mixed",
+        "confidence": "high"
+      }
+    ],
+    "confidenceNotes": [
+      "Source sketches are black on white. Notation was normalized to UML academic conventions: dashed lifelines, filled synchronous arrows, open return arrows, hollow generalization triangles, and compartmented classes."
+    ]
+  }
+}

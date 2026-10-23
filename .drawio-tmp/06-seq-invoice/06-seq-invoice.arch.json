@@ -1,0 +1,256 @@
+{
+  "version": 1,
+  "title": "Invoice three-way match and payment",
+  "type": "academic-diagram",
+  "source": "replicated",
+  "profile": "academic-paper",
+  "theme": "academic",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 26,
+    "edges": 13,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "a",
+      "label": "Procurement",
+      "type": "process"
+    },
+    {
+      "id": "a_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b",
+      "label": "ProcureX",
+      "type": "process"
+    },
+    {
+      "id": "b_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c",
+      "label": "API / services",
+      "type": "process"
+    },
+    {
+      "id": "c_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d",
+      "label": "Invoice",
+      "type": "process"
+    },
+    {
+      "id": "d_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "e",
+      "label": "Match chain",
+      "type": "process"
+    },
+    {
+      "id": "e_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "a_y0_a",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y0_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y1_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y1_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y2_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_y2_d",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_y3_d",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "e_y3_e",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "e_y4_e",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_y4_d",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "a_y5_a",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y5_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y6_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y6_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y7_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_y7_d",
+      "label": ".",
+      "type": "text"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "a",
+      "to": "a_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "b",
+      "to": "b_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "c",
+      "to": "c_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "d",
+      "to": "d_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-5",
+      "from": "e",
+      "to": "e_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-6",
+      "from": "a_y0_a",
+      "to": "b_y0_b",
+      "type": "primary",
+      "label": "1. Enter invoice against a PO"
+    },
+    {
+      "id": "edge-7",
+      "from": "b_y1_b",
+      "to": "c_y1_c",
+      "type": "primary",
+      "label": "2. POST /invoices"
+    },
+    {
+      "id": "edge-8",
+      "from": "c_y2_c",
+      "to": "d_y2_d",
+      "type": "primary",
+      "label": "3. Invoice.performThreeWayMatch"
+    },
+    {
+      "id": "edge-9",
+      "from": "d_y3_d",
+      "to": "e_y3_e",
+      "type": "primary",
+      "label": "4. NotDelivered -> Full -> Partial -> Price"
+    },
+    {
+      "id": "edge-10",
+      "from": "e_y4_e",
+      "to": "d_y4_d",
+      "type": "primary",
+      "label": "5. MatchResult"
+    },
+    {
+      "id": "edge-11",
+      "from": "a_y5_a",
+      "to": "b_y5_b",
+      "type": "primary",
+      "label": "6. Approve, hold, or raise credit note"
+    },
+    {
+      "id": "edge-12",
+      "from": "b_y6_b",
+      "to": "c_y6_c",
+      "type": "primary",
+      "label": "7. POST /invoices/{id}/pay (if approved)"
+    },
+    {
+      "id": "edge-13",
+      "from": "c_y7_c",
+      "to": "d_y7_d",
+      "type": "primary",
+      "label": "8. releasePayment, lock the PO"
+    }
+  ],
+  "modules": [],
+  "replication": {
+    "colorMode": "theme-first",
+    "background": "#FFFFFF",
+    "palette": [
+      {
+        "hex": "#FFFFFF",
+        "role": "canvas and node fill",
+        "appliesTo": "nodes",
+        "confidence": "high"
+      },
+      {
+        "hex": "#1E1E1E",
+        "role": "strokes, text, and arrows",
+        "appliesTo": "mixed",
+        "confidence": "high"
+      }
+    ],
+    "confidenceNotes": [
+      "Source sketches are black on white. Notation was normalized to UML academic conventions: dashed lifelines, filled synchronous arrows, open return arrows, hollow generalization triangles, and compartmented classes."
+    ]
+  }
+}

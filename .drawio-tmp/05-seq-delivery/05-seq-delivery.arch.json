@@ -1,0 +1,256 @@
+{
+  "version": 1,
+  "title": "Record a delivery against a placed purchase order",
+  "type": "academic-diagram",
+  "source": "replicated",
+  "profile": "academic-paper",
+  "theme": "academic",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 26,
+    "edges": 13,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "a",
+      "label": "Site manager",
+      "type": "process"
+    },
+    {
+      "id": "a_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b",
+      "label": "SiteFlow",
+      "type": "process"
+    },
+    {
+      "id": "b_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c",
+      "label": "API / services",
+      "type": "process"
+    },
+    {
+      "id": "c_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d",
+      "label": "PurchaseOrder",
+      "type": "process"
+    },
+    {
+      "id": "d_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "e",
+      "label": "PO state",
+      "type": "process"
+    },
+    {
+      "id": "e_foot",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "a_y0_a",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y0_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "a_y1_a",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y1_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y2_b",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y2_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y3_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_y3_d",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_y4_d",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "e_y4_e",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "e_y5_e",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_y5_d",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "d_y6_d",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y6_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "c_y7_c",
+      "label": ".",
+      "type": "text"
+    },
+    {
+      "id": "b_y7_b",
+      "label": ".",
+      "type": "text"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "a",
+      "to": "a_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "b",
+      "to": "b_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "c",
+      "to": "c_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "d",
+      "to": "d_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-5",
+      "from": "e",
+      "to": "e_foot",
+      "type": "primary"
+    },
+    {
+      "id": "edge-6",
+      "from": "a_y0_a",
+      "to": "b_y0_b",
+      "type": "primary",
+      "label": "1. Open Deliveries, pick a placed PO"
+    },
+    {
+      "id": "edge-7",
+      "from": "a_y1_a",
+      "to": "b_y1_b",
+      "type": "primary",
+      "label": "2. Enter qty, Accepted or Damaged (+ photo)"
+    },
+    {
+      "id": "edge-8",
+      "from": "b_y2_b",
+      "to": "c_y2_c",
+      "type": "primary",
+      "label": "3. POST /purchase-orders/{id}/deliveries"
+    },
+    {
+      "id": "edge-9",
+      "from": "c_y3_c",
+      "to": "d_y3_d",
+      "type": "primary",
+      "label": "4. PurchaseOrder.receive"
+    },
+    {
+      "id": "edge-10",
+      "from": "d_y4_d",
+      "to": "e_y4_e",
+      "type": "primary",
+      "label": "5. assertCanReceive + advance"
+    },
+    {
+      "id": "edge-11",
+      "from": "e_y5_e",
+      "to": "d_y5_d",
+      "type": "primary",
+      "label": "6. PARTIALLY_DELIVERED or FULLY_DELIVERED"
+    },
+    {
+      "id": "edge-12",
+      "from": "d_y6_d",
+      "to": "c_y6_c",
+      "type": "primary",
+      "label": "7. if fully delivered: PO_READY_FOR_INVOICE"
+    },
+    {
+      "id": "edge-13",
+      "from": "c_y7_c",
+      "to": "b_y7_b",
+      "type": "primary",
+      "label": "8. updated progress on the card"
+    }
+  ],
+  "modules": [],
+  "replication": {
+    "colorMode": "theme-first",
+    "background": "#FFFFFF",
+    "palette": [
+      {
+        "hex": "#FFFFFF",
+        "role": "canvas and node fill",
+        "appliesTo": "nodes",
+        "confidence": "high"
+      },
+      {
+        "hex": "#1E1E1E",
+        "role": "strokes, text, and arrows",
+        "appliesTo": "mixed",
+        "confidence": "high"
+      }
+    ],
+    "confidenceNotes": [
+      "Source sketches are black on white. Notation was normalized to UML academic conventions: dashed lifelines, filled synchronous arrows, open return arrows, hollow generalization triangles, and compartmented classes."
+    ]
+  }
+}

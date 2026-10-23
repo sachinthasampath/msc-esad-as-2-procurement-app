@@ -1,0 +1,93 @@
+{
+  "version": 1,
+  "title": "Request path through the simulator",
+  "type": "academic-diagram",
+  "source": "generated",
+  "profile": "academic-paper",
+  "theme": "academic",
+  "layout": "vertical",
+  "counts": {
+    "nodes": 5,
+    "edges": 4,
+    "modules": 4
+  },
+  "nodes": [
+    {
+      "id": "pwa",
+      "label": "SiteFlow PWA\nport 3001",
+      "type": "user",
+      "module": "ui"
+    },
+    {
+      "id": "web",
+      "label": "ProcureX office\nport 3000",
+      "type": "service",
+      "module": "ui"
+    },
+    {
+      "id": "handle",
+      "label": "REST /api/v1/*\nhandle.ts",
+      "type": "gateway",
+      "module": "api"
+    },
+    {
+      "id": "services",
+      "label": "Database services\nPrisma / SQLite",
+      "type": "database",
+      "module": "persist"
+    },
+    {
+      "id": "domainpkg",
+      "label": "packages/domain\nrules and patterns",
+      "type": "process",
+      "module": "domain"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "pwa",
+      "to": "handle",
+      "type": "primary",
+      "label": "Bearer token"
+    },
+    {
+      "id": "edge-2",
+      "from": "web",
+      "to": "handle",
+      "type": "primary",
+      "label": "Session cookie"
+    },
+    {
+      "id": "edge-3",
+      "from": "handle",
+      "to": "services",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "services",
+      "to": "domainpkg",
+      "type": "data",
+      "label": "load, run, save"
+    }
+  ],
+  "modules": [
+    {
+      "id": "ui",
+      "label": "Presentation"
+    },
+    {
+      "id": "api",
+      "label": "API"
+    },
+    {
+      "id": "persist",
+      "label": "Persistence"
+    },
+    {
+      "id": "domain",
+      "label": "Domain"
+    }
+  ]
+}

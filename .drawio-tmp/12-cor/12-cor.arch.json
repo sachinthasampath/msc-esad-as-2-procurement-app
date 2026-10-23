@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "title": "Three-way match chain",
+  "type": "academic-diagram",
+  "source": "generated",
+  "profile": "academic-paper",
+  "theme": "academic",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 4,
+    "edges": 3,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "h1",
+      "label": "NotDeliveredHandler\naccepted qty = 0",
+      "type": "process"
+    },
+    {
+      "id": "h2",
+      "label": "FullMatchHandler\nqty covered, amount matches",
+      "type": "process"
+    },
+    {
+      "id": "h3",
+      "label": "PartialDeliveryHandler\nshort receipt, amount matches",
+      "type": "process"
+    },
+    {
+      "id": "h4",
+      "label": "PriceMismatchHandler\nevery remaining case",
+      "type": "process"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "h1",
+      "to": "h2",
+      "type": "optional",
+      "label": "else"
+    },
+    {
+      "id": "edge-2",
+      "from": "h2",
+      "to": "h3",
+      "type": "optional",
+      "label": "else"
+    },
+    {
+      "id": "edge-3",
+      "from": "h3",
+      "to": "h4",
+      "type": "optional",
+      "label": "else"
+    }
+  ],
+  "modules": []
+}

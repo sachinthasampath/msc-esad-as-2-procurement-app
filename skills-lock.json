@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "drawio": {
+      "source": "bahayonghang/drawio-skills",
+      "sourceType": "github",
+      "skillPath": "skills/drawio/SKILL.md",
+      "computedHash": "0e5c75af78e52b1862d972a28bee66c3fd89e861c88c780b48000fe75257b3fa"
+    },
+    "drawio-academic-skills": {
+      "source": "bahayonghang/drawio-skills",
+      "sourceType": "github",
+      "skillPath": "skills/drawio-academic-skills/SKILL.md",
+      "computedHash": "c4ba3e4ea39789c074f378888166dc7de5132f5dfc03d34d493de9626a99647c"
+    }
+  }
+}

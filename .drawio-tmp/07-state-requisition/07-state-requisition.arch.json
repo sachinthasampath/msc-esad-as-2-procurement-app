@@ -1,0 +1,244 @@
+{
+  "version": 1,
+  "title": "07-state-requisition",
+  "type": "academic-diagram",
+  "source": "generated",
+  "profile": "academic-paper",
+  "theme": "academic",
+  "layout": "vertical",
+  "counts": {
+    "nodes": 11,
+    "edges": 25,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "Start",
+      "label": "Start",
+      "type": "terminal"
+    },
+    {
+      "id": "Draft",
+      "label": "Draft",
+      "type": "service"
+    },
+    {
+      "id": "OnHold",
+      "label": "OnHold",
+      "type": "service"
+    },
+    {
+      "id": "WaitingApproval",
+      "label": "WaitingApproval",
+      "type": "service"
+    },
+    {
+      "id": "Referred",
+      "label": "Referred",
+      "type": "service"
+    },
+    {
+      "id": "Approved",
+      "label": "Approved",
+      "type": "decision"
+    },
+    {
+      "id": "Cancelled",
+      "label": "Cancelled",
+      "type": "service"
+    },
+    {
+      "id": "PartiallyApproved",
+      "label": "PartiallyApproved",
+      "type": "decision"
+    },
+    {
+      "id": "Declined",
+      "label": "Declined",
+      "type": "service"
+    },
+    {
+      "id": "Returned",
+      "label": "Returned",
+      "type": "service"
+    },
+    {
+      "id": "End",
+      "label": "End",
+      "type": "terminal"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "Start",
+      "to": "Draft",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "Draft",
+      "to": "OnHold",
+      "type": "primary",
+      "label": "unpriced submit"
+    },
+    {
+      "id": "edge-3",
+      "from": "Draft",
+      "to": "WaitingApproval",
+      "type": "primary",
+      "label": "manager band"
+    },
+    {
+      "id": "edge-4",
+      "from": "Draft",
+      "to": "Referred",
+      "type": "primary",
+      "label": "above manager limit"
+    },
+    {
+      "id": "edge-5",
+      "from": "Draft",
+      "to": "Approved",
+      "type": "primary",
+      "label": "auto-approve"
+    },
+    {
+      "id": "edge-6",
+      "from": "Draft",
+      "to": "Cancelled",
+      "type": "primary",
+      "label": "cancel"
+    },
+    {
+      "id": "edge-7",
+      "from": "OnHold",
+      "to": "WaitingApproval",
+      "type": "primary",
+      "label": "priced, manager band"
+    },
+    {
+      "id": "edge-8",
+      "from": "OnHold",
+      "to": "Referred",
+      "type": "primary",
+      "label": "priced, above limit"
+    },
+    {
+      "id": "edge-9",
+      "from": "OnHold",
+      "to": "Approved",
+      "type": "primary",
+      "label": "priced, auto-approve"
+    },
+    {
+      "id": "edge-10",
+      "from": "OnHold",
+      "to": "Cancelled",
+      "type": "primary",
+      "label": "cancel"
+    },
+    {
+      "id": "edge-11",
+      "from": "WaitingApproval",
+      "to": "Approved",
+      "type": "primary",
+      "label": "approve"
+    },
+    {
+      "id": "edge-12",
+      "from": "WaitingApproval",
+      "to": "PartiallyApproved",
+      "type": "primary",
+      "label": "partial"
+    },
+    {
+      "id": "edge-13",
+      "from": "WaitingApproval",
+      "to": "Declined",
+      "type": "primary",
+      "label": "decline"
+    },
+    {
+      "id": "edge-14",
+      "from": "WaitingApproval",
+      "to": "Returned",
+      "type": "primary",
+      "label": "return"
+    },
+    {
+      "id": "edge-15",
+      "from": "WaitingApproval",
+      "to": "Referred",
+      "type": "primary",
+      "label": "refer"
+    },
+    {
+      "id": "edge-16",
+      "from": "WaitingApproval",
+      "to": "Cancelled",
+      "type": "primary",
+      "label": "cancel"
+    },
+    {
+      "id": "edge-17",
+      "from": "Referred",
+      "to": "Approved",
+      "type": "primary",
+      "label": "senior approve"
+    },
+    {
+      "id": "edge-18",
+      "from": "Referred",
+      "to": "PartiallyApproved",
+      "type": "primary",
+      "label": "senior partial"
+    },
+    {
+      "id": "edge-19",
+      "from": "Referred",
+      "to": "Declined",
+      "type": "primary",
+      "label": "senior decline"
+    },
+    {
+      "id": "edge-20",
+      "from": "Referred",
+      "to": "Returned",
+      "type": "primary",
+      "label": "senior return"
+    },
+    {
+      "id": "edge-21",
+      "from": "Returned",
+      "to": "Draft",
+      "type": "primary",
+      "label": "originator edits"
+    },
+    {
+      "id": "edge-22",
+      "from": "Approved",
+      "to": "End",
+      "type": "primary"
+    },
+    {
+      "id": "edge-23",
+      "from": "PartiallyApproved",
+      "to": "End",
+      "type": "primary"
+    },
+    {
+      "id": "edge-24",
+      "from": "Declined",
+      "to": "End",
+      "type": "primary"
+    },
+    {
+      "id": "edge-25",
+      "from": "Cancelled",
+      "to": "End",
+      "type": "primary"
+    }
+  ],
+  "modules": []
+}

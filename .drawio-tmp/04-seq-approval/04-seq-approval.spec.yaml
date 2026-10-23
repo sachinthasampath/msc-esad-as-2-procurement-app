@@ -1,0 +1,680 @@
+meta:
+  profile: academic-paper
+  theme: academic
+  source: replicated
+  layout: horizontal
+  routing: orthogonal
+  font:
+    primary: Times New Roman
+    cjk: Times New Roman,SimSun
+    formula: Times New Roman
+  replication:
+    colorMode: theme-first
+    background: '#FFFFFF'
+    palette:
+      - hex: '#FFFFFF'
+        role: canvas and node fill
+        appliesTo: nodes
+        confidence: high
+      - hex: '#1E1E1E'
+        role: strokes, text, and arrows
+        appliesTo: mixed
+        confidence: high
+    confidenceNotes:
+      - >-
+        Source sketches are black on white. Notation was normalized to UML academic conventions: dashed lifelines,
+        filled synchronous arrows, open return arrows, hollow generalization triangles, and compartmented classes.
+  figureType: workflow
+  title: Approval and purchase-order split
+  description: Manager decision on a waiting requisition, then purchase-order creation when the decision approves it.
+  legend: 'Filled arrow: synchronous message. Open dashed arrow: return. Vertical dashed line: lifeline.'
+  canvas: 1880x840
+  print:
+    widthPt: 1320
+    minPt: 8
+nodes:
+  - id: a
+    label: Manager
+    type: process
+    bounds:
+      x: 40
+      'y': 24
+      width: 176
+      height: 48
+    style:
+      fontSize: 13
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+      fillColor: '#FFFFFF'
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1.25
+      fontColor: '#1E1E1E'
+  - id: a_foot
+    label: .
+    type: text
+    bounds:
+      x: 119
+      'y': 760
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: b
+    label: ProcureX
+    type: process
+    bounds:
+      x: 440
+      'y': 24
+      width: 176
+      height: 48
+    style:
+      fontSize: 13
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+      fillColor: '#FFFFFF'
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1.25
+      fontColor: '#1E1E1E'
+  - id: b_foot
+    label: .
+    type: text
+    bounds:
+      x: 519
+      'y': 760
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: c
+    label: API / services
+    type: process
+    bounds:
+      x: 840
+      'y': 24
+      width: 176
+      height: 48
+    style:
+      fontSize: 13
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+      fillColor: '#FFFFFF'
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1.25
+      fontColor: '#1E1E1E'
+  - id: c_foot
+    label: .
+    type: text
+    bounds:
+      x: 919
+      'y': 760
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: d
+    label: Workflow
+    type: process
+    bounds:
+      x: 1240
+      'y': 24
+      width: 176
+      height: 48
+    style:
+      fontSize: 13
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+      fillColor: '#FFFFFF'
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1.25
+      fontColor: '#1E1E1E'
+  - id: d_foot
+    label: .
+    type: text
+    bounds:
+      x: 1319
+      'y': 760
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: e
+    label: Factory
+    type: process
+    bounds:
+      x: 1640
+      'y': 24
+      width: 176
+      height: 48
+    style:
+      fontSize: 13
+      fontWeight: 700
+      align: center
+      verticalAlign: middle
+      fillColor: '#FFFFFF'
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1.25
+      fontColor: '#1E1E1E'
+  - id: e_foot
+    label: .
+    type: text
+    bounds:
+      x: 1719
+      'y': 760
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: a_y0_a
+    label: .
+    type: text
+    bounds:
+      x: 119
+      'y': 107
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: b_y0_b
+    label: .
+    type: text
+    bounds:
+      x: 519
+      'y': 107
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: b_y1_b
+    label: .
+    type: text
+    bounds:
+      x: 519
+      'y': 175
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: c_y1_c
+    label: .
+    type: text
+    bounds:
+      x: 919
+      'y': 175
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: a_y2_a
+    label: .
+    type: text
+    bounds:
+      x: 119
+      'y': 243
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: b_y2_b
+    label: .
+    type: text
+    bounds:
+      x: 519
+      'y': 243
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: b_y3_b
+    label: .
+    type: text
+    bounds:
+      x: 519
+      'y': 311
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: c_y3_c
+    label: .
+    type: text
+    bounds:
+      x: 919
+      'y': 311
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: c_y4_c
+    label: .
+    type: text
+    bounds:
+      x: 919
+      'y': 379
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: d_y4_d
+    label: .
+    type: text
+    bounds:
+      x: 1319
+      'y': 379
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: d_y5_d
+    label: .
+    type: text
+    bounds:
+      x: 1319
+      'y': 447
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: e_y5_e
+    label: .
+    type: text
+    bounds:
+      x: 1719
+      'y': 447
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: e_y6_e
+    label: .
+    type: text
+    bounds:
+      x: 1719
+      'y': 515
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: c_y6_c
+    label: .
+    type: text
+    bounds:
+      x: 919
+      'y': 515
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: d_y7_d
+    label: .
+    type: text
+    bounds:
+      x: 1319
+      'y': 583
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: c_y7_c
+    label: .
+    type: text
+    bounds:
+      x: 919
+      'y': 583
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: c_y8_c
+    label: .
+    type: text
+    bounds:
+      x: 919
+      'y': 651
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+  - id: b_y8_b
+    label: .
+    type: text
+    bounds:
+      x: 519
+      'y': 651
+      width: 18
+      height: 26
+    style:
+      fontSize: 12
+      fontColor: '#FFFFFF'
+      align: center
+      verticalAlign: middle
+edges:
+  - from: a
+    to: a_foot
+    type: primary
+    style:
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1
+      dashed: true
+      dashPattern: 2 3
+      endArrow: none
+      endFill: false
+      fontSize: 11
+      exitX: 0.5
+      exitY: 1
+      entryX: 0.5
+      entryY: 0
+  - from: b
+    to: b_foot
+    type: primary
+    style:
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1
+      dashed: true
+      dashPattern: 2 3
+      endArrow: none
+      endFill: false
+      fontSize: 11
+      exitX: 0.5
+      exitY: 1
+      entryX: 0.5
+      entryY: 0
+  - from: c
+    to: c_foot
+    type: primary
+    style:
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1
+      dashed: true
+      dashPattern: 2 3
+      endArrow: none
+      endFill: false
+      fontSize: 11
+      exitX: 0.5
+      exitY: 1
+      entryX: 0.5
+      entryY: 0
+  - from: d
+    to: d_foot
+    type: primary
+    style:
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1
+      dashed: true
+      dashPattern: 2 3
+      endArrow: none
+      endFill: false
+      fontSize: 11
+      exitX: 0.5
+      exitY: 1
+      entryX: 0.5
+      entryY: 0
+  - from: e
+    to: e_foot
+    type: primary
+    style:
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1
+      dashed: true
+      dashPattern: 2 3
+      endArrow: none
+      endFill: false
+      fontSize: 11
+      exitX: 0.5
+      exitY: 1
+      entryX: 0.5
+      entryY: 0
+  - from: a_y0_a
+    to: b_y0_b
+    type: primary
+    label: 1. Open Requisitions queue
+    labelPosition: center
+    labelOffset:
+      x: 0
+      'y': -14
+    style:
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1.25
+      endArrow: block
+      endFill: true
+      endSize: 8
+      fontSize: 11
+      fontColor: '#1E1E1E'
+      exitX: 1
+      exitY: 0.5
+      entryX: 0
+      entryY: 0.5
+  - from: b_y1_b
+    to: c_y1_c
+    type: primary
+    label: 2. GET /requisitions?status=WAITING_APPROVAL
+    labelPosition: center
+    labelOffset:
+      x: 0
+      'y': -14
+    style:
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1.25
+      endArrow: block
+      endFill: true
+      endSize: 8
+      fontSize: 11
+      fontColor: '#1E1E1E'
+      exitX: 1
+      exitY: 0.5
+      entryX: 0
+      entryY: 0.5
+  - from: a_y2_a
+    to: b_y2_b
+    type: primary
+    label: 3. Approve / partial / decline / return / refer
+    labelPosition: center
+    labelOffset:
+      x: 0
+      'y': -14
+    style:
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1.25
+      endArrow: block
+      endFill: true
+      endSize: 8
+      fontSize: 11
+      fontColor: '#1E1E1E'
+      exitX: 1
+      exitY: 0.5
+      entryX: 0
+      entryY: 0.5
+  - from: b_y3_b
+    to: c_y3_c
+    type: primary
+    label: 4. POST /requisitions/{id}/decide
+    labelPosition: center
+    labelOffset:
+      x: 0
+      'y': -14
+    style:
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1.25
+      endArrow: block
+      endFill: true
+      endSize: 8
+      fontSize: 11
+      fontColor: '#1E1E1E'
+      exitX: 1
+      exitY: 0.5
+      entryX: 0
+      entryY: 0.5
+  - from: c_y4_c
+    to: d_y4_d
+    type: primary
+    label: 5. RequisitionWorkflow (budget check)
+    labelPosition: center
+    labelOffset:
+      x: 0
+      'y': -14
+    style:
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1.25
+      endArrow: block
+      endFill: true
+      endSize: 8
+      fontSize: 11
+      fontColor: '#1E1E1E'
+      exitX: 1
+      exitY: 0.5
+      entryX: 0
+      entryY: 0.5
+  - from: d_y5_d
+    to: e_y5_e
+    type: primary
+    label: '6. if approved: PurchaseOrderFactory.split'
+    labelPosition: center
+    labelOffset:
+      x: 0
+      'y': -14
+    style:
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1.25
+      endArrow: block
+      endFill: true
+      endSize: 8
+      fontSize: 11
+      fontColor: '#1E1E1E'
+      exitX: 1
+      exitY: 0.5
+      entryX: 0
+      entryY: 0.5
+  - from: e_y6_e
+    to: c_y6_c
+    type: primary
+    label: 7. one PO per supplier, status PLACED
+    labelPosition: center
+    labelOffset:
+      x: 0
+      'y': -14
+    style:
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1.25
+      endArrow: open
+      endFill: false
+      endSize: 10
+      fontSize: 11
+      fontColor: '#1E1E1E'
+      dashed: true
+      dashPattern: 6 4
+      exitX: 0
+      exitY: 0.5
+      entryX: 1
+      entryY: 0.5
+  - from: d_y7_d
+    to: c_y7_c
+    type: primary
+    label: '8. Observer: return notice if returned'
+    labelPosition: center
+    labelOffset:
+      x: 0
+      'y': -14
+    style:
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1.25
+      endArrow: block
+      endFill: true
+      endSize: 8
+      fontSize: 11
+      fontColor: '#1E1E1E'
+      exitX: 0
+      exitY: 0.5
+      entryX: 1
+      entryY: 0.5
+  - from: c_y8_c
+    to: b_y8_b
+    type: primary
+    label: 9. new status and PO numbers
+    labelPosition: center
+    labelOffset:
+      x: 0
+      'y': -14
+    style:
+      strokeColor: '#1E1E1E'
+      strokeWidth: 1.25
+      endArrow: open
+      endFill: false
+      endSize: 10
+      fontSize: 11
+      fontColor: '#1E1E1E'
+      dashed: true
+      dashPattern: 6 4
+      exitX: 0
+      exitY: 0.5
+      entryX: 1
+      entryY: 0.5
+modules: []

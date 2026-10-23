@@ -1,0 +1,229 @@
+{
+  "version": 1,
+  "title": "As-built class structure",
+  "type": "academic-diagram",
+  "source": "replicated",
+  "profile": "academic-paper",
+  "theme": "academic",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 21,
+    "edges": 14,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "user",
+      "label": "User (abstract)\n--------\nuserId\nname\nemail\ncontactNumber",
+      "type": "process"
+    },
+    {
+      "id": "siteManager",
+      "label": "SiteManager\n--------\nsiteId\n--------\ncreate requisition\nlog delivery",
+      "type": "process"
+    },
+    {
+      "id": "procurement",
+      "label": "ProcurementStaff\n--------\nprice catalogue\nenter invoice",
+      "type": "process"
+    },
+    {
+      "id": "management",
+      "label": "ManagementStaff\n--------\nlevel: OPERATIONAL | SENIOR\n--------\ndecide requisition",
+      "type": "process"
+    },
+    {
+      "id": "policy",
+      "label": "ApprovalPolicy\n--------\nautoApproveLimit\nmanagerLimit",
+      "type": "process"
+    },
+    {
+      "id": "requisition",
+      "label": "Requisition\n--------\nrequisitionId\nstatus\ncomments\n--------\ncalculateTotalValue()\nvalidateBudget()\nhasUnpriced()",
+      "type": "process"
+    },
+    {
+      "id": "reqLine",
+      "label": "RequisitionLine\n--------\nitem, supplier, depot, qty\nagreedPrice, approved\n--------\nisPriceValid()",
+      "type": "process"
+    },
+    {
+      "id": "account",
+      "label": "Account\n--------\naccountName, costCenter\ncurrentBalance",
+      "type": "process"
+    },
+    {
+      "id": "site",
+      "label": "ConstructionSite\n--------\nsiteName, address\ncontactPerson",
+      "type": "process"
+    },
+    {
+      "id": "po",
+      "label": "PurchaseOrder\n--------\npoId, status, deliveryAddress\npaymentLocked\n--------\nreceive()",
+      "type": "process"
+    },
+    {
+      "id": "poLine",
+      "label": "POLine\n--------\nqty, unitPrice\ncumulativeAcceptedQty",
+      "type": "process"
+    },
+    {
+      "id": "factory",
+      "label": "PurchaseOrderFactory\n--------\nsplit(requisition)\none PO per supplier+depot",
+      "type": "process"
+    },
+    {
+      "id": "supplier",
+      "label": "Supplier\n--------\nname, address, taxId",
+      "type": "process"
+    },
+    {
+      "id": "depot",
+      "label": "Depot\n--------\nlocation, contactDetails",
+      "type": "process"
+    },
+    {
+      "id": "delivery",
+      "label": "DeliveryRecord\n--------\ndate, note, siteManager",
+      "type": "process"
+    },
+    {
+      "id": "delLine",
+      "label": "DeliveryLine\n--------\nqtyReceived, condition\nphotoUri if Damaged",
+      "type": "process"
+    },
+    {
+      "id": "catalog",
+      "label": "CatalogItem\n--------\ndescription, agreedPrice\n--------\nisPriced()",
+      "type": "process"
+    },
+    {
+      "id": "invoice",
+      "label": "Invoice\n--------\ninvoiceNo, amount, status\n--------\nperformThreeWayMatch()\napprove(), releasePayment()",
+      "type": "process"
+    },
+    {
+      "id": "credit",
+      "label": "CreditNote\n--------\nadjustmentAmount",
+      "type": "process"
+    },
+    {
+      "id": "payment",
+      "label": "Payment\n--------\namount, method, paidAt",
+      "type": "process"
+    },
+    {
+      "id": "workflow",
+      "label": "RequisitionWorkflow\n--------\nsubmit, decide, cancel, edit\nloads RequisitionState",
+      "type": "process"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "siteManager",
+      "to": "user",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "procurement",
+      "to": "user",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "management",
+      "to": "user",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "policy",
+      "to": "user",
+      "type": "primary"
+    },
+    {
+      "id": "edge-5",
+      "from": "requisition",
+      "to": "siteManager",
+      "type": "primary"
+    },
+    {
+      "id": "edge-6",
+      "from": "requisition",
+      "to": "reqLine",
+      "type": "primary"
+    },
+    {
+      "id": "edge-7",
+      "from": "reqLine",
+      "to": "account",
+      "type": "primary"
+    },
+    {
+      "id": "edge-8",
+      "from": "po",
+      "to": "requisition",
+      "type": "primary"
+    },
+    {
+      "id": "edge-9",
+      "from": "po",
+      "to": "poLine",
+      "type": "primary"
+    },
+    {
+      "id": "edge-10",
+      "from": "po",
+      "to": "delivery",
+      "type": "primary"
+    },
+    {
+      "id": "edge-11",
+      "from": "delivery",
+      "to": "delLine",
+      "type": "primary"
+    },
+    {
+      "id": "edge-12",
+      "from": "delivery",
+      "to": "invoice",
+      "type": "primary"
+    },
+    {
+      "id": "edge-13",
+      "from": "invoice",
+      "to": "credit",
+      "type": "primary"
+    },
+    {
+      "id": "edge-14",
+      "from": "credit",
+      "to": "payment",
+      "type": "primary"
+    }
+  ],
+  "modules": [],
+  "replication": {
+    "colorMode": "theme-first",
+    "background": "#FFFFFF",
+    "palette": [
+      {
+        "hex": "#FFFFFF",
+        "role": "canvas and node fill",
+        "appliesTo": "nodes",
+        "confidence": "high"
+      },
+      {
+        "hex": "#1E1E1E",
+        "role": "strokes, text, and arrows",
+        "appliesTo": "mixed",
+        "confidence": "high"
+      }
+    ],
+    "confidenceNotes": [
+      "Source sketches are black on white. Notation was normalized to UML academic conventions: dashed lifelines, filled synchronous arrows, open return arrows, hollow generalization triangles, and compartmented classes."
+    ]
+  }
+}

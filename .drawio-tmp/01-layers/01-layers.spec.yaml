@@ -1,0 +1,68 @@
+meta:
+  profile: academic-paper
+  figureType: architecture
+  theme: academic
+  palette: ieee-bw
+  layout: vertical
+  source: generated
+  title: Request path through the simulator
+  description: SiteFlow and ProcureX share one API, one service layer, and one domain package.
+  legend: Rounded boxes are layers. Arrows show the request direction.
+  print:
+    target: cn-thesis
+nodes:
+  - id: pwa
+    label: |-
+      SiteFlow PWA
+      port 3001
+    type: user
+    module: ui
+  - id: web
+    label: |-
+      ProcureX office
+      port 3000
+    type: service
+    module: ui
+  - id: handle
+    label: |-
+      REST /api/v1/*
+      handle.ts
+    type: gateway
+    module: api
+  - id: services
+    label: |-
+      Database services
+      Prisma / SQLite
+    type: database
+    module: persist
+  - id: domainpkg
+    label: |-
+      packages/domain
+      rules and patterns
+    type: process
+    module: domain
+edges:
+  - from: pwa
+    to: handle
+    type: primary
+    label: Bearer token
+  - from: web
+    to: handle
+    type: primary
+    label: Session cookie
+  - from: handle
+    to: services
+    type: primary
+  - from: services
+    to: domainpkg
+    type: data
+    label: load, run, save
+modules:
+  - id: ui
+    label: Presentation
+  - id: api
+    label: API
+  - id: persist
+    label: Persistence
+  - id: domain
+    label: Domain

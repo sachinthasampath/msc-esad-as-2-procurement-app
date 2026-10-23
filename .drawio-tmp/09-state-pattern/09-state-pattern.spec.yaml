@@ -1,0 +1,42 @@
+meta:
+  profile: academic-paper
+  figureType: architecture
+  theme: academic
+  palette: ieee-bw
+  layout: vertical
+  source: generated
+  title: State pattern on the requisition
+  description: RequisitionWorkflow loads the state object for the current status and delegates the action.
+  legend: Each status class allows only the moves drawn on the state diagram.
+  print:
+    target: cn-thesis
+nodes:
+  - id: wf
+    label: RequisitionWorkflow
+    type: service
+  - id: draft
+    label: DraftState
+    type: process
+  - id: wait
+    label: WaitingApprovalState
+    type: process
+  - id: ref
+    label: ReferredState
+    type: process
+  - id: hold
+    label: OnHoldState
+    type: process
+edges:
+  - from: wf
+    to: draft
+    type: primary
+  - from: wf
+    to: wait
+    type: primary
+  - from: wf
+    to: ref
+    type: primary
+  - from: wf
+    to: hold
+    type: primary
+modules: []

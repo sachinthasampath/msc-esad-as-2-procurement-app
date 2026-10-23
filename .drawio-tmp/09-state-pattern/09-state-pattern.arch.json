@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "title": "State pattern on the requisition",
+  "type": "academic-diagram",
+  "source": "generated",
+  "profile": "academic-paper",
+  "theme": "academic",
+  "layout": "vertical",
+  "counts": {
+    "nodes": 5,
+    "edges": 4,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "wf",
+      "label": "RequisitionWorkflow",
+      "type": "service"
+    },
+    {
+      "id": "draft",
+      "label": "DraftState",
+      "type": "process"
+    },
+    {
+      "id": "wait",
+      "label": "WaitingApprovalState",
+      "type": "process"
+    },
+    {
+      "id": "ref",
+      "label": "ReferredState",
+      "type": "process"
+    },
+    {
+      "id": "hold",
+      "label": "OnHoldState",
+      "type": "process"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "wf",
+      "to": "draft",
+      "type": "primary"
+    },
+    {
+      "id": "edge-2",
+      "from": "wf",
+      "to": "wait",
+      "type": "primary"
+    },
+    {
+      "id": "edge-3",
+      "from": "wf",
+      "to": "ref",
+      "type": "primary"
+    },
+    {
+      "id": "edge-4",
+      "from": "wf",
+      "to": "hold",
+      "type": "primary"
+    }
+  ],
+  "modules": []
+}

@@ -1,0 +1,47 @@
+meta:
+  profile: academic-paper
+  figureType: workflow
+  theme: academic
+  palette: ieee-bw
+  layout: horizontal
+  source: generated
+  title: Three-way match chain
+  description: Invoice.performThreeWayMatch builds the figures. The first handler that recognises the case returns MatchResult.
+  legend: Each arrow is the pass-on path when the handler does not match.
+  print:
+    target: cn-thesis
+nodes:
+  - id: h1
+    label: |-
+      NotDeliveredHandler
+      accepted qty = 0
+    type: process
+  - id: h2
+    label: |-
+      FullMatchHandler
+      qty covered, amount matches
+    type: process
+  - id: h3
+    label: |-
+      PartialDeliveryHandler
+      short receipt, amount matches
+    type: process
+  - id: h4
+    label: |-
+      PriceMismatchHandler
+      every remaining case
+    type: process
+edges:
+  - from: h1
+    to: h2
+    type: optional
+    label: else
+  - from: h2
+    to: h3
+    type: optional
+    label: else
+  - from: h3
+    to: h4
+    type: optional
+    label: else
+modules: []
